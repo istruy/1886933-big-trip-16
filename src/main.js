@@ -6,6 +6,8 @@ import { createPointRouteTemplate } from './view/point-route-view.js';
 import { createSortTemplate } from './view/sort-view.js';
 import { renderTemplate, RenderPosition } from './render.js';
 
+const EVENTS_COUNT = 3;
+
 const siteMenuElement = document.querySelector('.trip-controls__navigation');
 const siteFilterElement = document.querySelector('.trip-controls__filters');
 
@@ -13,8 +15,6 @@ renderTemplate(siteMenuElement, RenderPosition.BEFOREEND, createSiteMenuTemplate
 renderTemplate(siteFilterElement, RenderPosition.BEFOREEND, createFilterTemplate());
 
 const sectionEventsElement = document.querySelector('.trip-events');
-
-const EVENTS_COUNT = 3;
 
 renderTemplate(sectionEventsElement, RenderPosition.BEFOREEND, createSortTemplate());
 renderTemplate(sectionEventsElement, RenderPosition.BEFOREEND, createFormEditingTemplate());
