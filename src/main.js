@@ -9,20 +9,20 @@ import { renderTemplate, RenderPosition } from './render.js';
 const siteMenuElement = document.querySelector('.trip-controls__navigation');
 const siteFilterElement = document.querySelector('.trip-controls__filters');
 
-renderTemplate(siteMenuElement, RenderPosition.BEFOREEND, createSiteMenuTemplate);
-renderTemplate(siteFilterElement, RenderPosition.BEFOREEND, createFilterTemplate);
+renderTemplate(siteMenuElement, RenderPosition.BEFOREEND, createSiteMenuTemplate());
+renderTemplate(siteFilterElement, RenderPosition.BEFOREEND, createFilterTemplate());
 
 const sectionEventsElement = document.querySelector('.trip-events');
 
 const EVENTS_COUNT = 3;
 
-renderTemplate(sectionEventsElement, RenderPosition.BEFOREEND, createSortTemplate);
-renderTemplate(sectionEventsElement, RenderPosition.BEFOREEND, createFormEditingTemplate);
+renderTemplate(sectionEventsElement, RenderPosition.BEFOREEND, createSortTemplate());
+renderTemplate(sectionEventsElement, RenderPosition.BEFOREEND, createFormEditingTemplate());
 
 for (let i = 0; i < EVENTS_COUNT - 1; i++) {
-  renderTemplate(sectionEventsElement, RenderPosition.BEFOREBEGIN, createPointRouteTemplate);
+  renderTemplate(sectionEventsElement, RenderPosition.BEFOREEND, createPointRouteTemplate());
 }
 
-renderTemplate(sectionEventsElement, RenderPosition.BEFOREEND, createFormCreationTemplate);
+renderTemplate(sectionEventsElement, RenderPosition.BEFOREEND, createFormCreationTemplate());
 
 

@@ -1,5 +1,5 @@
 export const RenderPosition = {
-  BEFOREEND: 'beforened',
+  BEFOREEND: 'beforeend',
   AFTEREND: 'afterend',
   BEFOREBEGIN: 'beforebegin',
   AFTERBEGIN: 'afterbegin',
