@@ -4,6 +4,7 @@ import { createFormCreationTemplate } from './view/form-creation-view.js';
 import { createFormEditingTemplate } from './view/form-editing-view.js';
 import { createPointRouteTemplate } from './view/point-route-view.js';
 import { createSortTemplate } from './view/sort-view.js';
+import { createDetailsTripTemplate } from './view/details-trip-view.js';
 import { renderTemplate, RenderPosition } from './render.js';
 
 const EVENTS_COUNT = 3;
@@ -25,4 +26,5 @@ for (let i = 0; i < EVENTS_COUNT - 1; i++) {
 
 renderTemplate(sectionEventsElement, RenderPosition.BEFOREEND, createFormCreationTemplate());
 
-
+const detailsTripElement = document.querySelector('.trip-main');
+renderTemplate(detailsTripElement, RenderPosition.AFTERBEGIN, createDetailsTripTemplate());
