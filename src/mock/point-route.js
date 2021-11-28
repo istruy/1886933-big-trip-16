@@ -1,3 +1,5 @@
+import flatpickr from "flatpickr";
+
 // Функция из интернета по генерации случайного числа из диапазона
 // Источник - https://github.com/you-dont-need/You-Dont-Need-Lodash-Underscore#_random
 const getRandomInteger = (a = 0, b = 1) => {
@@ -17,43 +19,50 @@ const generateTypeRoute = () => {
 
 const generatePointDestination = () => {
     const pointDestination = [
+        'Amsterdam', 'Tokyo', 'Los-Angeles', 'Capetown', 'New-York'
+    ];
+
+    return pointDestination[randomIndex];
+}
+
+/**
+ * 
+ * @returns Map() 0-5 results
+ */
+const generateDescription = () => {
+    const description = [
+        'Lorem ipsum dolor sit amet, consectetur adipiscing elit.',
+        'Cras aliquet varius magna, non porta ligula feugiat eget.',
+        'Fusce tristique felis at fermentum pharetra.',
+        'Aliquam id orci ut lectus varius viverra. ',
+        'Nullam nunc ex, convallis sed finibus eget, sollicitudin eget ante.',
+        'Phasellus eros mauris, condimentum sed nibh vitae, sodales efficitur ipsum.'
+    ];
+
+    let randomIndex = getRandomInteger(0, 5);
+    let resultInfo;
+    for (let i = 0; i < 4; i++) {
+        resultInfo = description[randomIndex] + ' ';
+    }
+    
+    return resultInfo;
+}
+
+const time = new DateTime();
+
+const generatePointDestination = () => {
+    const pointDestination = [
         {
-            nameDestination: 'Amsterdam',
-            information: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Cras aliquet varius magna, non porta ligula feugiat eget. Fusce tristique felis at fermentum pharetra. Aliquam id orci ut lectus varius viverra. Nullam nunc ex, convallis sed finibus eget, sollicitudin eget ante. Phasellus eros mauris, condimentum sed nibh vitae, sodales efficitur ipsum.',
-            image: 'http://picsum.photos/248/152?r=' + getRandomInteger(1, 1000),
-            image2: 'http://picsum.photos/248/152?r=' + getRandomInteger(1, 1000)
-        },
-        {
-            nameDestination: 'Tokyo',
-            information: 'Fusce tristique felis at fermentum pharetra. Aliquam id orci ut lectus varius viverra. Nullam nunc ex, convallis sed finibus eget, sollicitudin eget ante. Phasellus eros mauris, condimentum sed nibh vitae, sodales efficitur ipsum. Sed blandit, eros vel aliquam faucibus, purus ex euismod diam, eu luctus nunc ante ut dui. Sed sed nisi sed augue convallis suscipit in sed felis. Aliquam erat volutpat. Nunc fermentum tortor ac porta dapibus. In rutrum ac purus sit amet tempus.',
-            image: 'http://picsum.photos/248/152?r=' + getRandomInteger(1, 1000),
-            image2: 'http://picsum.photos/248/152?r=' + getRandomInteger(1, 1000)
-        },
-        {
-            nameDestination: 'Capetown',
-            information: 'Aliquam id orci ut lectus varius viverra.',
-            image: 'http://picsum.photos/248/152?r=' + getRandomInteger(1, 1000),
-            image2: 'http://picsum.photos/248/152?r=' + getRandomInteger(1, 1000)
-        },
-        {
-            nameDestination: 'Los-Angeles',
-            information: 'Nullam nunc ex, convallis sed finibus eget, sollicitudin eget ante. Phasellus eros mauris, condimentum sed nibh vitae, sodales efficitur ipsum.',
-            image1: 'http://picsum.photos/248/152?r=' + getRandomInteger(1, 1000),
-            image2: 'http://picsum.photos/248/152?r=' + getRandomInteger(1, 1000)
-        },
-        {
-            nameDestination: 'New-York',
-            information: 'Sed blandit, eros vel aliquam faucibus, purus ex euismod diam, eu luctus nunc ante ut dui.',
+            nameDestination: generatePointDestination(),
+            information: generateDescription(),
             image: 'http://picsum.photos/248/152?r=' + getRandomInteger(1, 1000),
             image2: 'http://picsum.photos/248/152?r=' + getRandomInteger(1, 1000)
         }
     ];
-
-    let randomIndex = getRandomInteger(0, 4);
-    return pointDestination[randomIndex];
+    return pointDestination;
 }
 
-const generateOffers = () => {
+const generateOffer = () => {
     const offers = [
         'Add luggage', 'Switch to comfort class', 'Add meal', 'Add alcohol', 'Choose neighbor'
     ];
@@ -62,13 +71,44 @@ const generateOffers = () => {
     return offers[randomIndex];
 }
 
-const offers = {
-    typeRoute: generateTypeRoute(),
-    name: generateOffers(),
-    price: {
-        generatePrice = () => {
-            let randomPrice = getRandomInteger(10, 500);
-            return randomPrice;
+/**
+ * 
+ * @returns Map() 0 - 5 results
+ */
+const generateOffer = () => {
+    const offer = () => {
+        const randomOffer = {
+            typeRoute: generateTypeRoute(),
+            nameOffer: generateOffers(),
+            price: {
+                generatePrice = () => {
+                    let randomPrice = getRandomInteger(10, 500);
+                    return randomPrice;
+                }
+            },
+            getNameOffer() {
+                return this.nameOffer;
+            },
+            getPrice() {
+                return this.price;
+            }
+        };
+
+        let randomIndex = getRandomInteger(0, 4);
+        let arrayOffers = new Map();
+        for (let i = 0; i < randomIndex; i++) {
+            arrayOffers.set(randomOffer[i].getNameOffer + ' +€ ' + randomOffer[i].getPrice);
         }
+        return arrayOffers;
     }
 };
+
+export const pointRoute = () => {
+    const randomPointRoute = {
+        typeRoute: generateTypeRoute(),
+        pointDestination: generatePointDestination(),
+        offers: generateOffer(),
+        infoPointDestination: generatePointDestination(),
+
+    }
+}
