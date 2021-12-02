@@ -1,11 +1,27 @@
-export const createPointRouteTemplate = () => (
-  `<li class="trip-events__item">
+export const createPointRouteTemplate = (pointRoute = {}) => {
+
+  const { typeRoute, pointDestination, offers, dateTime } = pointRoute;
+
+  const dateFormat = dateTime.format('YYYY-MM-DD');
+  const montFormat = dateTime.format('MMM D');
+
+  let offerElement = '';
+  for (const element of offers) {
+    offerElement += `<li class="event__offer">
+                      <span class="event__offer-title">${element.getNameOffer()}</span>
+                      &plus;&euro;&nbsp;
+                      <span class="event__offer-price">${element.getPrice()}</span>
+                      </li>`;
+  }
+
+
+  return `<li class="trip-events__item">
               <div class="event">
-                <time class="event__date" datetime="2019-03-18">MAR 18</time>
+                <time class="event__date" datetime="${dateFormat}">${montFormat}</time>
                 <div class="event__type">
                   <img class="event__type-icon" width="42" height="42" src="img/icons/taxi.png" alt="Event type icon">
                 </div>
-                <h3 class="event__title">Taxi Amsterdam</h3>
+                <h3 class="event__title">${typeRoute} ${pointDestination}</h3>
                 <div class="event__schedule">
                   <p class="event__time">
                     <time class="event__start-time" datetime="2019-03-18T10:30">10:30</time>
@@ -19,11 +35,7 @@ export const createPointRouteTemplate = () => (
                 </p>
                 <h4 class="visually-hidden">Offers:</h4>
                 <ul class="event__selected-offers">
-                  <li class="event__offer">
-                    <span class="event__offer-title">Order Uber</span>
-                    &plus;&euro;&nbsp;
-                    <span class="event__offer-price">20</span>
-                  </li>
+                  ${offerElement}
                 </ul>
                 <button class="event__favorite-btn event__favorite-btn--active" type="button">
                   <span class="visually-hidden">Add to favorite</span>
@@ -35,6 +47,6 @@ export const createPointRouteTemplate = () => (
                   <span class="visually-hidden">Open event</span>
                 </button>
               </div>
-            </li>`
-);
+            </li>`;
+};
 
