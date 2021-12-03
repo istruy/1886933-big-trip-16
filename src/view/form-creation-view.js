@@ -1,4 +1,4 @@
-export const createFormCreationTemplate = (pointRoute = {}, pointsDestination = {}) => {
+export const createFormCreationTemplate = (pointRoute = {}) => {
 
   const { typeRoute, pointDestination, offers, dateTime } = pointRoute;
   const { info, points } = pointsDestination;
