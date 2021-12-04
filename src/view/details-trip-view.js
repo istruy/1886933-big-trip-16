@@ -1,20 +1,11 @@
 import { getRandomInteger } from '../utils.js';
+import { POINTS_DESTINATION } from '../const.js';
 
-export const createDetailsTripTemplate = (details) => {
-
-  // const getRandomDate = () => {
-  //   const datetime1 = dateTime1.format('MMM D');
-  //   console.log(datetime1);
-  //   dateTime2.format('D');
-  //   if (datetime1.format('MM') == dateTime2.format('MM')) {
-  //     dateTime2.format('MMM D');
-  //   }
-  //   return [datetime1, dateTime2];
-  // }
+export const createDetailsTripTemplate = () => {
 
   const getPoints = () => {
     const point = (
-      `<h1 class="trip-info__title">${details[0]} ... ${details[1]}</h1>`
+      `<h1 class="trip-info__title">${POINTS_DESTINATION[getRandomInteger(0, POINTS_DESTINATION.length - 1)]} ... ${POINTS_DESTINATION[0, POINTS_DESTINATION.length - 1]}</h1>`
     );
     return point;
   };

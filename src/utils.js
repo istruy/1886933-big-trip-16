@@ -1,3 +1,5 @@
+import dayjs from 'dayjs';
+
 // Функция из интернета по генерации случайного числа из диапазона
 // Источник - https://github.com/you-dont-need/You-Dont-Need-Lodash-Underscore#_random
 export const getRandomInteger = (a = 0, b = 1) => {
@@ -9,18 +11,13 @@ export const getRandomInteger = (a = 0, b = 1) => {
 
 export const getRandomElementFromArray = (elements) => {
   const randomIndex = getRandomInteger(0, elements.length - 1);
-  return pointsDestination[randomIndex];
+  return elements[randomIndex];
 };
 
-export const generateArrayFromElements = (element, count) => {
-  let elements = new Array();
-  const randomIndex = getRandomInteger(0, count - 1);
-  for (let i = 0; i < randomIndex; i++) {
-    elements.push(element);
-  }
-  return elements;
-};
+export const getRandomBoolean = () => Math.random() < 0.5;
 
-export const getRandomBoolean = () => {
-  return Math.random() < 0.5
-};
+export const getYearMonthDayFormat = (date) => dayjs(date).format('YYYY-MM-DD');
+export const getYearMonthDayHourMinuteFormat = (date) => dayjs(date).format('YYYY-MM-DD HH:mm');
+export const getMonthDayFormat = (date) => dayjs(date).format('MMM D');
+export const getHourMinute = (date) => dayjs(date).format('HH:mm');
+export const getYearMonthDaySlashFormat = (date) => dayjs(date).format('YY/MM/DD HH:mm');
