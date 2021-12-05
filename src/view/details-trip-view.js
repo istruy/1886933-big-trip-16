@@ -22,7 +22,7 @@ export const createDetailsTripTemplate = (points) => {
       }
     }
     return fullPrice;
-  }
+  };
 
   const getPoints = () => {
     const point = (
