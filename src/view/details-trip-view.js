@@ -18,7 +18,8 @@ export const createDetailsTripTemplate = (points) => {
       const { basePrice, offers } = points[i];
       fullPrice += basePrice;
       for (const element of offers) {
-        fullPrice += element.getPrice();
+        const { price } = element;
+        fullPrice += price;
       }
     }
     return fullPrice;

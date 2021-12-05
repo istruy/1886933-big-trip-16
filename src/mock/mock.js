@@ -18,10 +18,7 @@ const getDescription = () => {
 const getPicture = () => {
   const pictures = {
     src: `http://picsum.photos/248/152?r=${getRandomInteger(1, 200)}`,
-    description: getDescription(),
-    getSrc() {
-      return this.src;
-    }
+    description: getDescription()
   };
   return pictures;
 };
@@ -54,13 +51,7 @@ const getRandomOffer = () => {
   const offer = {
     id: getRandomInteger(1, 1000),
     title: generateOfferName(),
-    price: generatePrice(),
-    getNameOffer() {
-      return this.title;
-    },
-    getPrice() {
-      return this.price;
-    }
+    price: generatePrice()
   };
   return offer;
 };

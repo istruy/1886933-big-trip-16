@@ -21,7 +21,8 @@ export const createFormCreationTemplate = (pointRoute = {}) => {
       <div class="event__photos-tape">`;
 
     for (const element of pictures) {
-      info += `<img class="event__photo" src="${element.getSrc()}" alt="Event photo">`;
+      const { src } = element;
+      info += `<img class="event__photo" src="${src}" alt="Event photo">`;
     }
     return info;
   };
@@ -29,12 +30,13 @@ export const createFormCreationTemplate = (pointRoute = {}) => {
   const getOffers = () => {
     let offerElement = '';
     for (const element of offers) {
+      const { title, price } = element;
       offerElement += `<div class="event__offer-selector">
           <input class="event__offer-checkbox  visually-hidden" id="event-offer-luggage-1" type="checkbox" name="event-offer-luggage" checked>
           <label class="event__offer-label" for="event-offer-luggage-1">
-            <span class="event__offer-title">${element.getNameOffer()}</span>
+            <span class="event__offer-title">${title}</span>
             &plus;&euro;&nbsp;
-            <span class="event__offer-price">${element.getPrice()}</span>
+            <span class="event__offer-price">${price}</span>
           </label>
         </div>`;
     }
