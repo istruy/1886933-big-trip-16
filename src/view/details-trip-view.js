@@ -1,11 +1,32 @@
-import { getRandomInteger } from '../utils.js';
-import { POINTS_DESTINATION } from '../const.js';
+export const createDetailsTripTemplate = (points) => {
 
-export const createDetailsTripTemplate = () => {
+  const getPointFrom = () => {
+    const { destination } = points[0];
+    const { name } = destination;
+    return name;
+  };
+
+  const getPointTo = () => {
+    const { destination } = points[points.length - 1];
+    const { name } = destination;
+    return name;
+  };
+
+  const getFullPrice = () => {
+    let fullPrice = 0;
+    for (let i = 0; i < points.length - 1; i++) {
+      const { basePrice, offers } = points[i];
+      fullPrice += basePrice;
+      for (const element of offers) {
+        fullPrice += element.getPrice();
+      }
+    }
+    return fullPrice;
+  }
 
   const getPoints = () => {
     const point = (
-      `<h1 class="trip-info__title">${POINTS_DESTINATION[getRandomInteger(0, POINTS_DESTINATION.length - 1)]} ... ${POINTS_DESTINATION[0, POINTS_DESTINATION.length - 1]}</h1>`
+      `<h1 class="trip-info__title">${getPointFrom()} ... ${getPointTo()}</h1>`
     );
     return point;
   };
@@ -18,7 +39,7 @@ export const createDetailsTripTemplate = () => {
           </div>
 
           <p class="trip-info__cost">
-            Total: &euro;&nbsp;<span class="trip-info__cost-value">${getRandomInteger(200, 3000)}</span>
+            Total: &euro;&nbsp;<span class="trip-info__cost-value">${getFullPrice()}</span>
           </p>
           </section>`;
 

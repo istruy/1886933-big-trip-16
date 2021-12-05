@@ -46,7 +46,7 @@ const getDestinations = () => {
 
 /** OFFERS */
 
-const generatePrice = () => getRandomInteger(10, 500);
+const generatePrice = () => getRandomInteger(10, 30);
 
 const generateOfferName = () => getRandomElementFromArray(OFFERS);
 
@@ -87,7 +87,7 @@ const generateDate = () => {
 
 const getPoint = () => {
   const point = {
-    basePrice: getRandomInteger(300, 500),
+    basePrice: getRandomInteger(100, 200),
     dateFrom: generateDate()[0],
     dateTo: generateDate()[1],
     destination: getDestinations(),
