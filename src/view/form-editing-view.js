@@ -1,6 +1,6 @@
 import { OFFERS, TYPE_ROUTE } from '../const.js';
 import { getYearMonthDaySlashFormat } from '../utils.js';
-import { createElement } from "../render.js";
+import { createElement } from '../render.js';
 
 const createFormEditingTemplate = (pointRoute) => {
 

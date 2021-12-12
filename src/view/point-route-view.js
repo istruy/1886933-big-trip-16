@@ -1,5 +1,5 @@
 import { getYearMonthDayFormat, getYearMonthDayHourMinuteFormat, getMonthDayFormat, getHourMinute } from '../utils';
-import { createElement } from "../render.js";
+import { createElement } from '../render.js';
 
 const createPointRouteTemplate = (pointRoute) => {
 
@@ -82,4 +82,4 @@ export default class PointRouteView {
   removeElement() {
     this.#element = null;
   }
-};
+}

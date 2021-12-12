@@ -1,6 +1,6 @@
 import { OFFERS, TYPE_ROUTE, POINTS_DESTINATION } from '../const.js';
 import { getYearMonthDaySlashFormat } from '../utils.js';
-import { createElement } from "../render.js";
+import { createElement } from '../render.js';
 import dayjs from 'dayjs';
 
 const BLANK_POINT = {
@@ -155,4 +155,4 @@ export default class FormCreationView {
   removeElement() {
     this.#element = null;
   }
-};
+}
