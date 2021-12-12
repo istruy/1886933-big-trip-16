@@ -1,6 +1,7 @@
 import { getYearMonthDayFormat, getYearMonthDayHourMinuteFormat, getMonthDayFormat, getHourMinute } from '../utils';
+import { createElement } from "../render.js";
 
-export const createPointRouteTemplate = (pointRoute = {}) => {
+const createPointRouteTemplate = (pointRoute) => {
 
   const { basePrice, dateFrom, dateTo, destination, isFavorite, offers, type } = pointRoute;
   const { name } = destination;
@@ -58,3 +59,27 @@ export const createPointRouteTemplate = (pointRoute = {}) => {
               </li>`;
 };
 
+export default class PointRouteView {
+  #element = null;
+  #point = null;
+
+  constructor(point) {
+    this.#point = point;
+  }
+
+  get element() {
+    if (!this.#element) {
+      this.#element = createElement(this.template);
+    }
+
+    return this.#element;
+  }
+
+  get template() {
+    return createPointRouteTemplate(this.#point);
+  }
+
+  removeElement() {
+    this.#element = null;
+  }
+};

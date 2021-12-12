@@ -1,7 +1,20 @@
-import { OFFERS, TYPE_ROUTE } from '../const.js';
+import { OFFERS, TYPE_ROUTE, POINTS_DESTINATION } from '../const.js';
 import { getYearMonthDaySlashFormat } from '../utils.js';
+import { createElement } from "../render.js";
+import dayjs from 'dayjs';
 
-export const createFormCreationTemplate = (pointRoute = {}) => {
+const BLANK_POINT = {
+  basePrice: 100,
+  dateFrom: dayjs(),
+  dateTo: dayjs(),
+  destination: POINTS_DESTINATION[0],
+  id: 1,
+  isFavorite: false,
+  offers: {},
+  type: TYPE_ROUTE[0]
+};
+
+const createFormCreationTemplate = (pointRoute = {}) => {
 
   const { basePrice, dateFrom, dateTo, destination, offers, type } = pointRoute;
   const { description, name, pictures } = destination;
@@ -117,4 +130,29 @@ export const createFormCreationTemplate = (pointRoute = {}) => {
                 </section>
               </form>
               </li>`;
+};
+
+export default class FormCreationView {
+  #element = null;
+  #point = null;
+
+  constructor(point = BLANK_POINT) {
+    this.#point = point;
+  }
+
+  get element() {
+    if (!this.#element) {
+      this.#element = createElement(this.template);
+    }
+
+    return this.#element;
+  }
+
+  get template() {
+    return createFormCreationTemplate(this.#point);
+  }
+
+  removeElement() {
+    this.#element = null;
+  }
 };

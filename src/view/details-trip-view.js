@@ -1,4 +1,6 @@
-export const createDetailsTripTemplate = (points) => {
+import { createElement } from "../render.js";
+
+const createDetailsTripTemplate = (points) => {
 
   const getPointFrom = () => {
     const { destination } = points[0];
@@ -45,3 +47,29 @@ export const createDetailsTripTemplate = (points) => {
           </section>`;
 
 };
+
+export default class DetailsTripView {
+  #element = null;
+  #point = null;
+
+  constructor(point) {
+    this.#point = point;
+  }
+
+  get element() {
+    if (!this.#element) {
+      this.#element = createElement(this.template);
+    }
+
+    return this.#element;
+  }
+
+  get template() {
+    return createDetailsTripTemplate(this.#point);
+  }
+
+  removeElement() {
+    this.#element = null;
+  }
+
+}

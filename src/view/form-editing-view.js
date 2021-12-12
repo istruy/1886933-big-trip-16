@@ -1,7 +1,8 @@
 import { OFFERS, TYPE_ROUTE } from '../const.js';
 import { getYearMonthDaySlashFormat } from '../utils.js';
+import { createElement } from "../render.js";
 
-export const createFormEditingTemplate = (pointRoute = {}) => {
+const createFormEditingTemplate = (pointRoute) => {
 
   const { basePrice, dateFrom, dateTo, destination, offers, type } = pointRoute;
   const { description, name, pictures } = destination;
@@ -119,3 +120,29 @@ export const createFormEditingTemplate = (pointRoute = {}) => {
               </form>
               </li>`;
 };
+
+export default class FormEditingView {
+  #element = null;
+  #point = null;
+
+  constructor(point) {
+    this.#point = point;
+  }
+
+  get element() {
+    if (!this.#element) {
+      this.#element = createElement(this.template);
+    }
+
+    return this.#element;
+  }
+
+  get template() {
+    return createFormEditingTemplate(this.#point);
+  }
+
+  removeElement() {
+    this.#element = null;
+  }
+
+}

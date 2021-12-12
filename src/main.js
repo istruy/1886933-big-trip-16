@@ -1,35 +1,69 @@
-import { createSiteMenuTemplate } from './view/site-menu-view.js';
-import { createFilterTemplate } from './view/filter-view.js';
-import { createFormCreationTemplate } from './view/form-creation-view.js';
-import { createFormEditingTemplate } from './view/form-editing-view.js';
-import { createPointRouteTemplate } from './view/point-route-view.js';
-import { createSortTemplate } from './view/sort-view.js';
-import { createDetailsTripTemplate } from './view/details-trip-view.js';
-import { renderTemplate, RenderPosition } from './render.js';
+import SiteMenuView from './view/site-menu-view.js';
+import FilterView from './view/filter-view.js';
+import FormCreationView from './view/form-creation-view.js';
+import FormEditingView from './view/form-editing-view.js';
+import PointRouteView from './view/point-route-view.js';
+import SortView from './view/sort-view.js';
+import DetailsTripViewfrom from './view/details-trip-view.js';
+import { render, RenderPosition } from './render.js';
 import { getPoints } from './mock/mock.js';
-import { createTripEventsContainer } from './view/all-points-view.js';
+import TripEventsView from './view/all-points-view.js';
+
+const points = getPoints();
 
 const siteMenuElement = document.querySelector('.trip-controls__navigation');
 const siteFilterElement = document.querySelector('.trip-controls__filters');
 
-renderTemplate(siteMenuElement, RenderPosition.BEFOREEND, createSiteMenuTemplate());
-renderTemplate(siteFilterElement, RenderPosition.BEFOREEND, createFilterTemplate());
+render(siteMenuElement, RenderPosition.BEFOREEND, new SiteMenuView().element);
+render(siteFilterElement, RenderPosition.BEFOREEND, new FilterView().element);
 
 const sectionEventsElement = document.querySelector('.trip-events');
 
-const pointsRoute = getPoints();
-renderTemplate(sectionEventsElement, RenderPosition.BEFOREEND, createSortTemplate());
+//render(sectionEventsElement, RenderPosition.BEFOREEND, new SortView().element);
 
-renderTemplate(sectionEventsElement, RenderPosition.BEFOREEND, createTripEventsContainer());
-const createTripEventsContainerElement = sectionEventsElement.querySelector('.trip-events__list');
-renderTemplate(createTripEventsContainerElement, RenderPosition.BEFOREEND, createFormEditingTemplate(pointsRoute[0]));
+const renderPoint = (pointListElement, point) => {
+  const pointComponent = new PointRouteView(point);
+  const pointEditComponent = new FormEditingView(point);
 
-for (let i = 0; i < pointsRoute.length - 1; i++) {
-  renderTemplate(createTripEventsContainerElement, RenderPosition.BEFOREEND, createPointRouteTemplate(pointsRoute[i]));
+  const replacePointToForm = () => {
+    pointListElement.replaceChild(pointEditComponent.element, pointComponent.element);
+  };
+
+  const replaceFormToPoint = () => {
+    pointListElement.replaceChild(pointComponent.element, pointEditComponent.element);
+  };
+
+  const onEscKeyDown = (evt) => {
+    if (evt.key === 'Escape' || evt.key === 'Esc') {
+      evt.preventDefault();
+      replaceFormToPoint();
+      document.removeEventListener('keydown', onEscKeyDown);
+    }
+  };
+
+  pointComponent.element.querySelector('.card__btn--edit').addEventListener('click', () => {
+    replacePointToForm();
+    document.addEventListener('keydown', onEscKeyDown);
+  });
+
+  pointEditComponent.element.querySelector('form').addEventListener('submit', (evt) => {
+    evt.preventDefault();
+    replaceFormToPoint();
+    document.removeEventListener('keydown', onEscKeyDown);
+  });
+
+  render(pointListElement, RenderPosition.BEFOREEND, pointComponent.element);
+};
+
+const pointListComponent = new TripEventsView();
+render(sectionEventsElement, RenderPosition.BEFOREEND, pointListComponent.element);
+//const createTripEventsContainerElement = sectionEventsElement.querySelector('.trip-events__list');
+
+for (let i = 0; i < points.length - 1; i++) {
+  //renderPoint(pointListComponent.element, points[i]);
 }
 
-renderTemplate(createTripEventsContainerElement, RenderPosition.BEFOREEND, createFormCreationTemplate(pointsRoute[9]));
+//render(createTripEventsContainerElement, RenderPosition.BEFOREEND, new FormCreationView(points[9]).element);
 
 const detailsTripElement = document.querySelector('.trip-main');
-renderTemplate(detailsTripElement, RenderPosition.AFTERBEGIN, createDetailsTripTemplate(pointsRoute));
-
+render(detailsTripElement, RenderPosition.AFTERBEGIN, new DetailsTripViewfrom(points).element);
