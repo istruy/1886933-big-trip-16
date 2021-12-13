@@ -50,10 +50,10 @@ const createDetailsTripTemplate = (points) => {
 
 export default class DetailsTripView {
   #element = null;
-  #point = null;
+  #points = null;
 
-  constructor(point) {
-    this.#point = point;
+  constructor(points) {
+    this.#points = points;
   }
 
   get element() {
@@ -65,7 +65,7 @@ export default class DetailsTripView {
   }
 
   get template() {
-    return createDetailsTripTemplate(this.#point);
+    return createDetailsTripTemplate(this.#points);
   }
 
   removeElement() {
