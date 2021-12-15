@@ -4,7 +4,7 @@ import FormEditingView from './view/form-editing-view.js';
 import PointRouteView from './view/point-route-view.js';
 import SortView from './view/sort-view.js';
 import DetailsTripViewfrom from './view/details-trip-view.js';
-import { render, RenderPosition, replace, removeElement } from './utils/render.js';
+import { render, RenderPosition, replace } from './utils/render.js';
 import { getPoints } from './mock/mock.js';
 import TripEventsView from './view/all-points-view.js';
 import NoPointView from './view/no-point-view.js';

@@ -67,7 +67,7 @@ export default class PointRouteView extends AbstractView {
     this.element.querySelector('.event__rollup-btn').addEventListener('click', this.#editClickHandler);
   }
 
-  #editClickHandler = (evt) => {
+  #editClickHandler = () => {
     this._callback.editCallback();
   }
 

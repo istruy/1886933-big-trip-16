@@ -1,4 +1,4 @@
-import AbstractView from "../view/abstract-view";
+import AbstractView from '../view/abstract-view';
 
 export const RenderPosition = {
   BEFOREEND: 'beforeend',
@@ -43,7 +43,7 @@ export const replace = (newElement, oldElement) => {
 
   parent.replaceChild(newChild, oldChild);
 
-}
+};
 
 export const removeElement = (component) => {
   if (component === null) {
@@ -56,7 +56,7 @@ export const removeElement = (component) => {
 
   component.element.remove();
   component.removeElement();
-}
+};
 
 // Принцип работы прост:
 // 1. создаём пустой div-блок

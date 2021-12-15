@@ -1,4 +1,3 @@
-import { createElement } from '../utils/render.js';
 import AbstractView from './abstract-view.js';
 
 const createDetailsTripTemplate = (points) => {
