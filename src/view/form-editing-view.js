@@ -1,6 +1,6 @@
 import { OFFERS, TYPE_ROUTE } from '../const.js';
-import { getYearMonthDaySlashFormat } from '../utils.js';
-import { createElement } from '../render.js';
+import { getYearMonthDaySlashFormat } from '../utils/point.js';
+import AbstractView from './abstract-view.js';
 
 const createFormEditingTemplate = (pointRoute) => {
 
@@ -121,28 +121,25 @@ const createFormEditingTemplate = (pointRoute) => {
               </li>`;
 };
 
-export default class FormEditingView {
-  #element = null;
+export default class FormEditingView extends AbstractView {
   #point = null;
 
   constructor(point) {
+    super();
     this.#point = point;
-  }
-
-  get element() {
-    if (!this.#element) {
-      this.#element = createElement(this.template);
-    }
-
-    return this.#element;
   }
 
   get template() {
     return createFormEditingTemplate(this.#point);
   }
 
-  removeElement() {
-    this.#element = null;
+  setFormSubmitHandler = (callback) => {
+    this._callback.formCallback = callback;
+    this.element.querySelector('form').addEventListener('submit', this.#formSubmitHandler);
   }
 
+  #formSubmitHandler = (evt) => {
+    evt.preventDefault();
+    this._callback.formCallback();
+  }
 }

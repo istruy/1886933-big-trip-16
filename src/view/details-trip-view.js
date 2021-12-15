@@ -1,4 +1,5 @@
-import { createElement } from '../render.js';
+import { createElement } from '../utils/render.js';
+import AbstractView from './abstract-view.js';
 
 const createDetailsTripTemplate = (points) => {
 
@@ -48,28 +49,15 @@ const createDetailsTripTemplate = (points) => {
 
 };
 
-export default class DetailsTripView {
-  #element = null;
+export default class DetailsTripView extends AbstractView {
   #points = null;
 
   constructor(points) {
+    super();
     this.#points = points;
-  }
-
-  get element() {
-    if (!this.#element) {
-      this.#element = createElement(this.template);
-    }
-
-    return this.#element;
   }
 
   get template() {
     return createDetailsTripTemplate(this.#points);
   }
-
-  removeElement() {
-    this.#element = null;
-  }
-
 }
