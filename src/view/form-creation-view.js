@@ -1,7 +1,7 @@
 import { OFFERS, TYPE_ROUTE, POINTS_DESTINATION } from '../const.js';
 import { getYearMonthDaySlashFormat } from '../utils.js';
-import { createElement } from '../render.js';
 import dayjs from 'dayjs';
+import AbstractView from './abstract-view.js';
 
 const BLANK_POINT = {
   basePrice: 100,
@@ -132,27 +132,15 @@ const createFormCreationTemplate = (pointRoute = {}) => {
               </li>`;
 };
 
-export default class FormCreationView {
-  #element = null;
+export default class FormCreationView extends AbstractView {
   #point = null;
 
   constructor(point = BLANK_POINT) {
+    super();
     this.#point = point;
-  }
-
-  get element() {
-    if (!this.#element) {
-      this.#element = createElement(this.template);
-    }
-
-    return this.#element;
   }
 
   get template() {
     return createFormCreationTemplate(this.#point);
-  }
-
-  removeElement() {
-    this.#element = null;
   }
 }

@@ -1,5 +1,4 @@
-import { getRandomBoolean, getRandomElementFromArray } from '../utils.js';
-import { getRandomInteger } from '../utils.js';
+import { getRandomBoolean, getRandomElementFromArray, getRandomInteger } from '../utils/common.js';
 import dayjs from 'dayjs';
 import { POINTS_DESTINATION, DESCRIPTION, OFFERS, POINTS_COUNT, TYPE_ROUTE } from '../const.js';
 

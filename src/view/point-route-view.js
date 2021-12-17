@@ -1,5 +1,5 @@
-import { getYearMonthDayFormat, getYearMonthDayHourMinuteFormat, getMonthDayFormat, getHourMinute } from '../utils';
-import { createElement } from '../render.js';
+import { getYearMonthDayFormat, getYearMonthDayHourMinuteFormat, getMonthDayFormat, getHourMinute } from '../utils/point.js';
+import AbstractView from './abstract-view';
 
 const createPointRouteTemplate = (pointRoute) => {
 
@@ -59,27 +59,24 @@ const createPointRouteTemplate = (pointRoute) => {
               </li>`;
 };
 
-export default class PointRouteView {
-  #element = null;
+export default class PointRouteView extends AbstractView {
   #point = null;
 
-  constructor(point) {
-    this.#point = point;
+  setEditClickHandler = (callback) => {
+    this._callback.editCallback = callback;
+    this.element.querySelector('.event__rollup-btn').addEventListener('click', this.#editClickHandler);
   }
 
-  get element() {
-    if (!this.#element) {
-      this.#element = createElement(this.template);
-    }
+  #editClickHandler = () => {
+    this._callback.editCallback();
+  }
 
-    return this.#element;
+  constructor(point) {
+    super();
+    this.#point = point;
   }
 
   get template() {
     return createPointRouteTemplate(this.#point);
-  }
-
-  removeElement() {
-    this.#element = null;
   }
 }
