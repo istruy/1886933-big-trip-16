@@ -1,5 +1,6 @@
 import { getRandomBoolean, getRandomElementFromArray, getRandomInteger } from '../utils/common.js';
 import dayjs from 'dayjs';
+import { nanoid } from 'nanoid';
 import { POINTS_DESTINATION, DESCRIPTION, OFFERS, POINTS_COUNT, TYPE_ROUTE } from '../const.js';
 
 const generateTypeRoute = () => getRandomElementFromArray(TYPE_ROUTE);
@@ -77,11 +78,11 @@ const generateDate = () => {
 
 const getPoint = () => {
   const point = {
+    id: nanoid(),
     basePrice: getRandomInteger(100, 200),
     dateFrom: generateDate()[0],
     dateTo: generateDate()[1],
     destination: getDestinations(),
-    id: getRandomInteger(300, 500),
     isFavorite: getRandomBoolean(),
     offers: generateOffers(),
     type: generateTypeRoute()

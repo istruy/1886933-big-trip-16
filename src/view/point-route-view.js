@@ -63,12 +63,23 @@ export default class PointRouteView extends AbstractView {
   #point = null;
 
   setEditClickHandler = (callback) => {
-    this._callback.editCallback = callback;
+    this._callback.editClick = callback;
     this.element.querySelector('.event__rollup-btn').addEventListener('click', this.#editClickHandler);
   }
 
-  #editClickHandler = () => {
-    this._callback.editCallback();
+  #editClickHandler = (evt) => {
+    evt.preventDefault();
+    this._callback.editClick();
+  }
+
+  setFavoriteClickHandler = (callback) => {
+    this._callback.favoriteClick = callback;
+    this.element.querySelector('.event__favorite-btn').addEventListener('click', this.#favoriteClickHandler);
+  }
+
+  #favoriteClickHandler = (evt) => {
+    evt.preventDefault();
+    this._callback.favoriteClick();
   }
 
   constructor(point) {
