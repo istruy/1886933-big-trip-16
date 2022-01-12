@@ -1,6 +1,6 @@
 import PointRouteView from '../view/point-route-view';
 import FormEditingView from '../view/form-editing-view';
-import { removeElement, render, RenderPosition, replace } from '../utils/render';
+import { removeElement, render, RenderPosition, replace } from '../utils/render.js';
 
 const Mode = {
   DEFAULT: 'DEFAULT',
@@ -36,6 +36,7 @@ export default class PointPresenter {
     this.#pointComponent.setEditClickHandler(this.#handleEditClick);
     this.#pointEditComponent.setFormSubmitHandler(this.#handleFormSubmit);
     this.#pointComponent.setFavoriteClickHandler(this.#handleFavoriteClick);
+    this.#pointEditComponent.setDeleteClickHandler(this.#handleDeleteClick);
 
     if (prevPointRoute === null || prevPointEditRoute === null) {
       render(this.#pointListContainer, RenderPosition.BEFOREEND, this.#pointComponent);
@@ -89,6 +90,11 @@ export default class PointPresenter {
 
   #handleFavoriteClick = () => {
     this.#changeData({ ...this.#point, isFavorite: !this.#point.isFavorite });
+  }
+
+  #handleDeleteClick = () => {
+    this.#changeData(this.#point);
+    this.destroy();
   }
 
   #escDownHandler = (evt) => {
