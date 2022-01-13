@@ -1,4 +1,4 @@
-import { updateItem } from '../utils/common';
+import { updateItem, deleteItem } from '../utils/common';
 import { render, RenderPosition } from '../utils/render';
 import TripEventsView from '../view/all-points-view';
 import BoardView from '../view/board-view';
@@ -48,6 +48,7 @@ export default class TripEventsPresenter {
   };
 
   #handlePointDelete = (deletedPoint) => {
+    this.#boardPoints = deleteItem(this.#boardPoints, deletedPoint);
     this.#pointPresenter.delete(deletedPoint.id);
   }
 

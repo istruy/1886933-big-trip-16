@@ -27,3 +27,16 @@ export const updateItem = (items, update) => {
     ...items.slice(index + 1)
   ];
 };
+
+export const deleteItem = (items, deletedItem) => {
+  const index = items.findIndex((item) => item.id === deletedItem.id);
+
+  if (index === -1) {
+    return items;
+  }
+
+  return [
+    ...items.slice(0, index),
+    ...items.slice(index + 1)
+  ];
+};
