@@ -31,7 +31,7 @@ export default class TripEventsPresenter {
   }
 
   #renderPoint = (point) => {
-    const pointPresenter = new PointPresenter(this.#tripEventsComponent, this.#handlePointChange, this.#handleModeChange);
+    const pointPresenter = new PointPresenter(this.#tripEventsComponent, this.#handlePointChange, this.#handleModeChange, this.#handlePointDelete);
     pointPresenter.init(point);
     this.#pointPresenter.set(point.id, pointPresenter);
   }
@@ -46,6 +46,10 @@ export default class TripEventsPresenter {
       this.#renderPoint(points[i]);
     }
   };
+
+  #handlePointDelete = (deletedPoint) => {
+    this.#pointPresenter.delete(deletedPoint.id);
+  }
 
   #handleModeChange = () => {
     this.#pointPresenter.forEach((presenter) => presenter.resetView());

@@ -12,16 +12,18 @@ export default class PointPresenter {
   #changeData = null;
   #pointListContainer = null;
   #changeMode = null;
+  #deleteData = null;
 
   #pointComponent = null;
   #pointEditComponent = null;
 
   #mode = Mode.DEFAULT;
 
-  constructor(pointListContainer, changeData, changeMode) {
+  constructor(pointListContainer, changeData, changeMode, deleteData) {
     this.#pointListContainer = pointListContainer;
     this.#changeData = changeData;
     this.#changeMode = changeMode;
+    this.#deleteData = deleteData;
   }
 
   init = (point) => {
@@ -89,11 +91,11 @@ export default class PointPresenter {
   }
 
   #handleFavoriteClick = () => {
-    this.#changeData({ ...this.#point, isFavorite: !this.#point.isFavorite });
+    this.#changeData({ ...this.#point, isFavorite: !this.#point.isFavorite});
   }
 
   #handleDeleteClick = () => {
-    this.#changeData(this.#point);
+    this.#deleteData(this.#point);
     this.destroy();
   }
 
