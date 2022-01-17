@@ -42,7 +42,6 @@ export const replace = (newElement, oldElement) => {
   }
 
   parent.replaceChild(newChild, oldChild);
-
 };
 
 export const removeElement = (component) => {

@@ -16,3 +16,9 @@ export const TYPE_ROUTE = [
   'Taxi', 'Bus', 'Train', 'Ship', 'Drive', 'Flight', 'Check-in', 'Sightseeing', 'Restaurant'
 ];
 export const POINTS_COUNT = 15;
+
+export const SORT_TYPES = {
+  DAY: 'Day',
+  PRICE: 'Price',
+  TIME: 'Time'
+};
