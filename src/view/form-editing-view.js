@@ -1,4 +1,5 @@
 import { OFFERS, TYPE_ROUTE } from '../const.js';
+import { getOffersWithType, getDestination } from '../mock/mock.js';
 import { getYearMonthDaySlashFormat } from '../utils/point.js';
 import SmartView from './smart-view.js';
 
@@ -126,22 +127,31 @@ export default class FormEditingView extends SmartView {
     super();
     this._data = FormEditingView.parsePointToData(point);
 
-    this.element.querySelector('.event__type-group').addEventListener('click', this.#changeTypeRouteHandler);
-    this.element.querySelector('.event__input--destination').addEventListener('blur', this.#changeDestinationHandler)
+    this.#setInnerHandlers();
   }
 
   get template() {
     return createFormEditingTemplate(this._data);
   }
 
+  restoreHandlers() {
+    this.#setInnerHandlers();
+    this.setFormSubmitHandler(this._callback.formSubmit);
+  }
+
+  #setInnerHandlers = () => {
+    this.element.querySelector('.event__type-group').addEventListener('click', this.#changeTypeRouteHandler);
+    this.element.querySelector('.event__input--destination').addEventListener('blur', this.#changeDestinationHandler);
+  }
+
   setFormSubmitHandler = (callback) => {
-    this._callback.formCallback = callback;
+    this._callback.formSubmit = callback;
     this.element.querySelector('form').addEventListener('submit', this.#formSubmitHandler);
   }
 
   #formSubmitHandler = (evt) => {
     evt.preventDefault();
-    this._callback.formCallback(FormEditingView.parseDataToPoint(this._data));
+    this._callback.formSubmit(FormEditingView.parseDataToPoint(this._data));
   }
 
   setDeleteClickHandler = (callback) => {
@@ -157,25 +167,59 @@ export default class FormEditingView extends SmartView {
   #changeTypeRouteHandler = (evt) => {
     evt.preventDefault();
     this.updateData({
-      typeRoutes: evt.target.innerHTML
+      newTypeRoute: evt.target.innerHTML
     });
   }
 
   #changeDestinationHandler = (evt) => {
     evt.preventDefault();
-    this.updateData({
+    updateData({
       pointRoute: evt.target.value
     });
   }
 
+  static #getNewOffers = (type) => {
+    const typesAndOffers = getOffersWithType();
+    console.log(typesAndOffers);
+    for (let element of typesAndOffers) {
+      if (element.type === type) {
+        return typesAndOffers.offers;
+      }
+    }
+  }
+
+  static #getNewDestination = (oldDestination) => {
+    let newDestination = getDestination();
+    while (oldDestination !== newDestination.name) {
+      newDestination = getDestination();
+    }
+    return newDestination;
+  }
+
   static parsePointToData = (point) => ({
     ...point,
-    typeRoute: point.type,
+    newTypeRoute: point.type,
     pointRoute: point.destination.name
   });
 
   static parseDataToPoint = (data) => {
     const point = { ...data };
 
+    if (point.type !== point.newTypeRoute) {
+      point.type = point.newTypeRoute;
+      point.offers = this.#getNewOffers(point.type);
+    }
+
+    if (point.destination.name !== point.pointRoute) {
+      point.destination.name = point.pointRoute;
+      const newDestination = this.#getNewDestination();
+      point.destination.pictures = newDestination.pictures;
+      point.destination.description = newDestination.description;
+    }
+
+    delete point.newTypeRoute;
+    delete point.pointRoute;
+
+    return point;
   }
 }

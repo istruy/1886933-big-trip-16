@@ -32,7 +32,7 @@ const generateImagesDestination = () => {
   return pictures;
 };
 
-const getDestination = () => {
+export const getDestination = () => {
   const destination = {
     description: getDescription(),
     name: generatePointDestination(),
@@ -64,6 +64,15 @@ const generateOffers = () => {
   }
   return offers;
 };
+
+export const getOffersWithType = () => {
+  let typesAndOffers = [];
+  const offers = generateOffers();
+  for (let element of TYPE_ROUTE) {
+    typesAndOffers.push({ type: element, ...offers });
+  }
+  return typesAndOffers;
+}
 
 /** DATE */
 

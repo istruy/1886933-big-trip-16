@@ -1,6 +1,8 @@
 import AbstractView from "./abstract-view";
 
 export default class SmartView extends AbstractView {
+  _data = {};
+
   constructor() {
     super();
     if (new.target === AbstractView) {
@@ -8,17 +10,14 @@ export default class SmartView extends AbstractView {
     }
   }
 
-  restoreHandlers() {
-
-  }
-
   updateElement = () => {
     const prevElement = this.element;
     const parentElement = prevElement.parentElement;
     this.removeElement();
-
     const newElement = this.element;
     parentElement.replaceChild(newElement, prevElement);
+
+    this.restoreHandlers();
   }
 
   updateData = (update) => {
