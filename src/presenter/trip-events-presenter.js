@@ -97,7 +97,11 @@ export default class TripEventsPresenter {
       case SORT_TYPES.TIME:
         this.#boardPoints.sort(sortTime);
         break;
-      default:
+      case SORT_TYPES.OFFERS:
+        break;
+      case SORT_TYPES.TIME:
+        break;
+      case SORT_TYPES.DAY:
         this.#boardPoints = [...this.#sourceSortPoints];
     }
 

@@ -32,7 +32,7 @@ const generateImagesDestination = () => {
   return pictures;
 };
 
-const getDestinations = () => {
+const getDestination = () => {
   const destination = {
     description: getDescription(),
     name: generatePointDestination(),
@@ -82,7 +82,7 @@ const getPoint = () => {
     basePrice: getRandomInteger(100, 200),
     dateFrom: generateDate()[0],
     dateTo: generateDate()[1],
-    destination: getDestinations(),
+    destination: getDestination(),
     isFavorite: getRandomBoolean(),
     offers: generateOffers(),
     type: generateTypeRoute()

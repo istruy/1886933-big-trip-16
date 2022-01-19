@@ -1,6 +1,6 @@
 import { OFFERS, TYPE_ROUTE } from '../const.js';
 import { getYearMonthDaySlashFormat } from '../utils/point.js';
-import AbstractView from './abstract-view.js';
+import SmartView from './smart-view.js';
 
 const createFormEditingTemplate = (pointRoute) => {
 
@@ -121,16 +121,17 @@ const createFormEditingTemplate = (pointRoute) => {
               </li>`;
 };
 
-export default class FormEditingView extends AbstractView {
-  #point = null;
-
+export default class FormEditingView extends SmartView {
   constructor(point) {
     super();
-    this.#point = point;
+    this._data = FormEditingView.parsePointToData(point);
+
+    this.element.querySelector('.event__type-group').addEventListener('click', this.#changeTypeRouteHandler);
+    this.element.querySelector('.event__input--destination').addEventListener('blur', this.#changeDestinationHandler)
   }
 
   get template() {
-    return createFormEditingTemplate(this.#point);
+    return createFormEditingTemplate(this._data);
   }
 
   setFormSubmitHandler = (callback) => {
@@ -140,7 +141,7 @@ export default class FormEditingView extends AbstractView {
 
   #formSubmitHandler = (evt) => {
     evt.preventDefault();
-    this._callback.formCallback(this.#point);
+    this._callback.formCallback(FormEditingView.parseDataToPoint(this._data));
   }
 
   setDeleteClickHandler = (callback) => {
@@ -153,4 +154,28 @@ export default class FormEditingView extends AbstractView {
     this._callback.deleteClick();
   }
 
+  #changeTypeRouteHandler = (evt) => {
+    evt.preventDefault();
+    this.updateData({
+      typeRoutes: evt.target.innerHTML
+    });
+  }
+
+  #changeDestinationHandler = (evt) => {
+    evt.preventDefault();
+    this.updateData({
+      pointRoute: evt.target.value
+    });
+  }
+
+  static parsePointToData = (point) => ({
+    ...point,
+    typeRoute: point.type,
+    pointRoute: point.destination.name
+  });
+
+  static parseDataToPoint = (data) => {
+    const point = { ...data };
+
+  }
 }

@@ -20,5 +20,7 @@ export const POINTS_COUNT = 15;
 export const SORT_TYPES = {
   DAY: 'Day',
   PRICE: 'Price',
-  TIME: 'Time'
+  TIME: 'Time',
+  OFFERS: 'Offers',
+  EVENT: 'Event'
 };
