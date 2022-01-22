@@ -1,7 +1,8 @@
 import { OFFERS, TYPE_ROUTE, POINTS_DESTINATION } from '../const.js';
 import { getYearMonthDaySlashFormat } from '../utils.js';
+import { getOffersWithType, getDestination } from '../mock/mock.js';
 import dayjs from 'dayjs';
-import AbstractView from './abstract-view.js';
+import SmartView from './smart-view.js';
 
 const BLANK_POINT = {
   basePrice: 100,
@@ -132,15 +133,123 @@ const createFormCreationTemplate = (pointRoute = {}) => {
               </li>`;
 };
 
-export default class FormCreationView extends AbstractView {
-  #point = null;
-
+export default class FormCreationView extends SmartView {
   constructor(point = BLANK_POINT) {
     super();
-    this.#point = point;
+    this._data = FormCreationView.parsePointToData(point);
+    this.#setInnerHandlers();
   }
 
   get template() {
-    return createFormCreationTemplate(this.#point);
+    return createFormCreationTemplate(this._data);
+  }
+
+  restoreHandlers() {
+    this.#setInnerHandlers();
+    this.setFormSubmitHandler(this._callback.formSubmit);
+  }
+
+  #setInnerHandlers = () => {
+    this.element.querySelector('.event__type-group').addEventListener('click', this.#changeTypeRouteHandler);
+    this.element.querySelector('.event__input--destination').addEventListener('change', this.#changeDestinationHandler);
+    this.element.querySelector('.event__input--price').addEventListener('change', this.#priceChangeHandler);
+    this.element.querySelector('.event__available-offers').addEventListener('click', this.#offersChangeHandler);
+  }
+
+
+  setFormSubmitHandler = (callback) => {
+    this._callback.formSubmit = callback;
+    this.element.querySelector('form').addEventListener('submit', this.#formSubmitHandler);
+  }
+
+  #formSubmitHandler = (evt) => {
+    evt.preventDefault();
+    this._callback.formSubmit(FormCreationView.parseDataToPoint(this._data));
+  }
+
+  setDeleteClickHandler = (callback) => {
+    this._callback.deleteClick = callback;
+    this.element.querySelector('.event__reset-btn').addEventListener('click', this.#deleteClickHandler);
+  }
+
+  #deleteClickHandler = (evt) => {
+    evt.preventDefault();
+    this._callback.deleteClick();
+  }
+
+  #changeTypeRouteHandler = (evt) => {
+    evt.preventDefault();
+    this.updateData({
+      type: evt.target.innerHTML
+    });
+  }
+
+  #changeDestinationHandler = (evt) => {
+    evt.preventDefault();
+    this.updateData({
+      pointDestination: evt.target.value
+    });
+  }
+
+  static #getNewOffers = (type) => {
+    const typesAndOffers = getOffersWithType();
+    for (const element of typesAndOffers) {
+      if (element.type === type) {
+        return typesAndOffers.offers;
+      }
+    }
+  }
+
+  static #getNewDestination = (oldDestination) => {
+    let newDestination = getDestination();
+    while (oldDestination !== newDestination.name) {
+      newDestination = getDestination();
+    }
+    return newDestination;
+  }
+
+  #priceChangeHandler = (evt) => {
+    evt.preventDefault();
+    this.updateData({
+      basePrice: evt.target.value,
+    });
+  }
+
+  #offersChangeHandler = (evt) => {
+    evt.preventDefault();
+    this.updateData({
+      isOfferChecked: evt.target.htmlFor
+    });
+  }
+
+  reset = (point) => {
+    this.updateData(FormCreationView.parsePointToData(point));
+  }
+
+  static parsePointToData = (point) => ({
+    ...point,
+    newTypeRoute: point.type,
+    pointRoute: point.destination.name
+  });
+
+  static parseDataToPoint = (data) => {
+    const point = { ...data };
+
+    if (point.type !== point.newTypeRoute) {
+      point.type = point.newTypeRoute;
+      point.offers = this.#getNewOffers(point.type);
+    }
+
+    if (point.destination.name !== point.pointRoute) {
+      point.destination.name = point.pointRoute;
+      const newDestination = this.#getNewDestination();
+      point.destination.pictures = newDestination.pictures;
+      point.destination.description = newDestination.description;
+    }
+
+    delete point.newTypeRoute;
+    delete point.pointRoute;
+
+    return point;
   }
 }

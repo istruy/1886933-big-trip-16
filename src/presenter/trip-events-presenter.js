@@ -62,6 +62,9 @@ export default class TripEventsPresenter {
       return;
     }
     this.#sortTypes(sortType);
+    if (this.#currentSortType !== sortType) {
+      return;
+    }
     this.#clearPointList();
     this.#renderPointsList(this.#boardPoints);
     removeElement(this.#sortComponent);
@@ -93,19 +96,20 @@ export default class TripEventsPresenter {
     switch (sortType) {
       case SORT_TYPES.PRICE:
         this.#boardPoints.sort(sortPrice);
+        this.#currentSortType = sortType;
         break;
       case SORT_TYPES.TIME:
         this.#boardPoints.sort(sortTime);
+        this.#currentSortType = sortType;
         break;
-      case SORT_TYPES.OFFERS:
-        break;
-      case SORT_TYPES.TIME:
+      case undefined:
         break;
       case SORT_TYPES.DAY:
         this.#boardPoints = [...this.#sourceSortPoints];
+        this.#currentSortType = sortType;
+        break;
     }
 
-    this.#currentSortType = sortType;
   }
 
   #renderNoPoints = () => {

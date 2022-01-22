@@ -1,4 +1,4 @@
-import AbstractView from "./abstract-view";
+import AbstractView from './abstract-view';
 
 export default class SmartView extends AbstractView {
   _data = {};
@@ -15,8 +15,9 @@ export default class SmartView extends AbstractView {
     const parentElement = prevElement.parentElement;
     this.removeElement();
     const newElement = this.element;
-    parentElement.replaceChild(newElement, prevElement);
-
+    if (parentElement !== null) {
+      parentElement.replaceChild(newElement, prevElement);
+    }
     this.restoreHandlers();
   }
 

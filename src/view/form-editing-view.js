@@ -3,9 +3,9 @@ import { getOffersWithType, getDestination } from '../mock/mock.js';
 import { getYearMonthDaySlashFormat } from '../utils/point.js';
 import SmartView from './smart-view.js';
 
-const createFormEditingTemplate = (pointRoute) => {
+const createFormEditingTemplate = (data) => {
 
-  const { basePrice, dateFrom, dateTo, destination, offers, type } = pointRoute;
+  const { basePrice, dateFrom, dateTo, destination, offers, type, pointDestination } = data;
   const { description, name, pictures } = destination;
 
   const getDestinationTemplate = () => {
@@ -31,16 +31,18 @@ const createFormEditingTemplate = (pointRoute) => {
 
   const getOffers = () => {
     let offerElement = '';
+    let count = 1;
     for (const element of offers) {
       const { title, price } = element;
       offerElement += `<div class="event__offer-selector">
-          <input class="event__offer-checkbox  visually-hidden" id="event-offer-luggage-1" type="checkbox" name="event-offer-luggage" checked>
-          <label class="event__offer-label" for="event-offer-luggage-1">
+          <input class="event__offer-checkbox  visually-hidden" id="event-offer-luggage-${count}" type="checkbox" name="event-offer-luggage" checked>
+          <label class="event__offer-label" for="event-offer-luggage-${count}">
             <span class="event__offer-title">${title}</span>
             &plus;&euro;&nbsp;
             <span class="event__offer-price">${price}</span>
           </label>
         </div>`;
+      count++;
     }
 
     return `<section class="event__section  event__section--offers">
@@ -82,44 +84,44 @@ const createFormEditingTemplate = (pointRoute) => {
                     <label class="event__label  event__type-output" for="event-destination-1">
                     ${type}
                     </label>
-                    <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${name}" list="destination-list-1">
-                    <datalist id="destination-list-1">
-                    ${getDestinationTemplate()}
+                    <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${pointDestination === undefined ? name : pointDestination}" list="destination-list-1">
+      <datalist id = "destination-list-1">
+        ${getDestinationTemplate()}
                     </datalist>
                   </div>
 
-                  <div class="event__field-group  event__field-group--time">
-                    <label class="visually-hidden" for="event-start-time-1">From</label>
-                    <input class="event__input  event__input--time" id="event-start-time-1" type="text" name="event-start-time" value="${getYearMonthDaySlashFormat(dateFrom)}">
-                    &mdash;
-                    <label class="visually-hidden" for="event-end-time-1">To</label>
-                    <input class="event__input  event__input--time" id="event-end-time-1" type="text" name="event-end-time" value="${getYearMonthDaySlashFormat(dateTo)}">
-                  </div>
+  <div class="event__field-group  event__field-group--time">
+    <label class="visually-hidden" for="event-start-time-1">From</label>
+    <input class="event__input  event__input--time" id="event-start-time-1" type="text" name="event-start-time" value="${getYearMonthDaySlashFormat(dateFrom)}">
+      &mdash;
+      <label class="visually-hidden" for="event-end-time-1">To</label>
+      <input class="event__input  event__input--time" id="event-end-time-1" type="text" name="event-end-time" value="${getYearMonthDaySlashFormat(dateTo)}">
+      </div>
 
-                  <div class="event__field-group  event__field-group--price">
-                    <label class="event__label" for="event-price-1">
-                      <span class="visually-hidden">Price</span>
-                      &euro;
-                    </label>
-                    <input class="event__input  event__input--price" id="event-price-1" type="text" name="event-price" value="${basePrice}">
-                  </div>
+      <div class="event__field-group  event__field-group--price">
+        <label class="event__label" for="event-price-1">
+          <span class="visually-hidden">Price</span>
+          &euro;
+        </label>
+        <input class="event__input  event__input--price" id="event-price-1" type="text" name="event-price" value="${basePrice}">
+      </div>
 
-                  <button class="event__save-btn  btn  btn--blue" type="submit">Save</button>
-                  <button class="event__reset-btn" type="reset">Delete</button>
-                  <button class="event__rollup-btn" type="button">
-                    <span class="visually-hidden">Open event</span>
-                  </button>
-                </header>
-                <section class="event__details">
-                  ${getOffers()}
-                  <section class="event__section  event__section--destination">
-                    ${getInfoAboutCity()}
-                      </div>
-                    </div>
-                  </section>
-                </section>
-              </form>
-              </li>`;
+      <button class="event__save-btn  btn  btn--blue" type="submit" ${pointDestination === '' || basePrice === '' ? 'disabled' : ''}>Save</button>
+      <button class="event__reset-btn" type="reset">Delete</button>
+      <button class="event__rollup-btn" type="button">
+        <span class="visually-hidden">Open event</span>
+      </button>
+    </header>
+    <section class="event__details">
+      ${getOffers()}
+      <section class="event__section  event__section--destination">
+        ${getInfoAboutCity()}
+      </div>
+  </div>
+                  </section >
+                </section >
+              </form >
+              </li > `;
 };
 
 export default class FormEditingView extends SmartView {
@@ -141,7 +143,9 @@ export default class FormEditingView extends SmartView {
 
   #setInnerHandlers = () => {
     this.element.querySelector('.event__type-group').addEventListener('click', this.#changeTypeRouteHandler);
-    this.element.querySelector('.event__input--destination').addEventListener('blur', this.#changeDestinationHandler);
+    this.element.querySelector('.event__input--destination').addEventListener('change', this.#changeDestinationHandler);
+    this.element.querySelector('.event__input--price').addEventListener('change', this.#priceChangeHandler);
+    this.element.querySelector('.event__available-offers').addEventListener('click', this.#offersChangeHandler);
   }
 
   setFormSubmitHandler = (callback) => {
@@ -167,21 +171,20 @@ export default class FormEditingView extends SmartView {
   #changeTypeRouteHandler = (evt) => {
     evt.preventDefault();
     this.updateData({
-      newTypeRoute: evt.target.innerHTML
+      type: evt.target.innerHTML
     });
   }
 
   #changeDestinationHandler = (evt) => {
     evt.preventDefault();
-    updateData({
-      pointRoute: evt.target.value
+    this.updateData({
+      pointDestination: evt.target.value
     });
   }
 
   static #getNewOffers = (type) => {
     const typesAndOffers = getOffersWithType();
-    console.log(typesAndOffers);
-    for (let element of typesAndOffers) {
+    for (const element of typesAndOffers) {
       if (element.type === type) {
         return typesAndOffers.offers;
       }
@@ -194,6 +197,24 @@ export default class FormEditingView extends SmartView {
       newDestination = getDestination();
     }
     return newDestination;
+  }
+
+  #priceChangeHandler = (evt) => {
+    evt.preventDefault();
+    this.updateData({
+      basePrice: evt.target.value,
+    });
+  }
+
+  #offersChangeHandler = (evt) => {
+    evt.preventDefault();
+    this.updateData({
+      isOfferChecked: evt.target.htmlFor
+    });
+  }
+
+  reset = (point) => {
+    this.updateData(FormEditingView.parsePointToData(point));
   }
 
   static parsePointToData = (point) => ({

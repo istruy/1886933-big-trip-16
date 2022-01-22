@@ -66,13 +66,13 @@ const generateOffers = () => {
 };
 
 export const getOffersWithType = () => {
-  let typesAndOffers = [];
+  const typesAndOffers = [];
   const offers = generateOffers();
-  for (let element of TYPE_ROUTE) {
+  for (const element of TYPE_ROUTE) {
     typesAndOffers.push({ type: element, ...offers });
   }
   return typesAndOffers;
-}
+};
 
 /** DATE */
 
