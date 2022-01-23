@@ -57,8 +57,8 @@ const getRandomOffer = () => {
 };
 
 const generateOffers = () => {
-  const offers = new Array();
   const randomIndex = getRandomInteger(0, 5);
+  const offers = new Array();
   for (let i = 0; i < randomIndex; i++) {
     offers.push(getRandomOffer());
   }
@@ -66,10 +66,10 @@ const generateOffers = () => {
 };
 
 export const getOffersWithType = () => {
-  const typesAndOffers = [];
   const offers = generateOffers();
+  const typesAndOffers = new Array();
   for (const element of TYPE_ROUTE) {
-    typesAndOffers.push({ type: element, ...offers });
+    typesAndOffers.push({ type: element, offers: offers });
   }
   return typesAndOffers;
 };

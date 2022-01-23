@@ -40,3 +40,16 @@ export const deleteItem = (items, deletedItem) => {
     ...items.slice(index + 1)
   ];
 };
+
+export const deleteItemById = (items, id) => {
+  const index = items.findIndex((item) => item.id === id);
+
+  if (index === -1) {
+    return items;
+  }
+
+  return [
+    ...items.slice(0, index),
+    ...items.slice(index + 1)
+  ];
+};

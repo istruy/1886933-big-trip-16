@@ -1,48 +1,63 @@
-import { OFFERS, TYPE_ROUTE } from '../const.js';
+import { POINTS_DESTINATION, TYPE_ROUTE } from '../const.js';
 import { getOffersWithType, getDestination } from '../mock/mock.js';
+import { deleteItemById } from '../utils/common.js';
 import { getYearMonthDaySlashFormat } from '../utils/point.js';
 import SmartView from './smart-view.js';
 
 const createFormEditingTemplate = (data) => {
 
-  const { basePrice, dateFrom, dateTo, destination, offers, type, pointDestination } = data;
+  const { basePrice, dateFrom, dateTo, destination, offers, type, pointDestination, newDescription, newPictures, isOfferChecked } = data;
   const { description, name, pictures } = destination;
+
+  const offersItems = offers;
 
   const getDestinationTemplate = () => {
     let destinations = '';
-    for (let i = 0; i < OFFERS.length; i++) {
-      destinations += `<option value="${OFFERS[i]}"></option>`;
+    for (let i = 0; i < POINTS_DESTINATION.length; i++) {
+      destinations += `<option value="${POINTS_DESTINATION[i]}"></option>`;
     }
     return destinations;
   };
 
   const getInfoAboutCity = () => {
+    let newPointDescription = description;
+    let newPointPictures = pictures;
+
+    if (newDescription !== undefined && newPictures !== undefined) {
+      newPointDescription = newDescription;
+      newPointPictures = newPictures;
+    }
     let info = `<h3 class="event__section-title  event__section-title--destination">Destination</h3>
-    <p class="event__destination-description">${description}</p>
+    <p class="event__destination-description">${newPointDescription}</p>
     <div class="event__photos-container">
       <div class="event__photos-tape">`;
 
-    for (const element of pictures) {
+    for (const element of newPointPictures) {
       const { src } = element;
       info += `<img class="event__photo" src="${src}" alt="Event photo">`;
     }
     return info;
   };
 
+  const getPointDestination = () => pointDestination === undefined ? name : pointDestination;
+
   const getOffers = () => {
     let offerElement = '';
-    let count = 1;
-    for (const element of offers) {
-      const { title, price } = element;
+    for (let i = 0; i < offersItems.length; i++) {
+      const { id, title, price } = offersItems[i];
+      let stateOffer = 'checked';
+      if (isOfferChecked === String(id)) {
+        stateOffer = '';
+      }
+
       offerElement += `<div class="event__offer-selector">
-          <input class="event__offer-checkbox  visually-hidden" id="event-offer-luggage-${count}" type="checkbox" name="event-offer-luggage" checked>
-          <label class="event__offer-label" for="event-offer-luggage-${count}">
+          <input class="event__offer-checkbox  visually-hidden" id="event-offer-luggage-${id}" type="checkbox" name="event-offer-luggage" ${stateOffer}>
+          <label class="event__offer-label" for="event-offer-luggage-${id}" data-id=${id}>
             <span class="event__offer-title">${title}</span>
             &plus;&euro;&nbsp;
             <span class="event__offer-price">${price}</span>
           </label>
         </div>`;
-      count++;
     }
 
     return `<section class="event__section  event__section--offers">
@@ -84,9 +99,9 @@ const createFormEditingTemplate = (data) => {
                     <label class="event__label  event__type-output" for="event-destination-1">
                     ${type}
                     </label>
-                    <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${pointDestination === undefined ? name : pointDestination}" list="destination-list-1">
-      <datalist id = "destination-list-1">
-        ${getDestinationTemplate()}
+                    <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${getPointDestination()}" list="destination-list-1">
+                    <datalist id = "destination-list-1">
+                      ${getDestinationTemplate()}
                     </datalist>
                   </div>
 
@@ -171,27 +186,30 @@ export default class FormEditingView extends SmartView {
   #changeTypeRouteHandler = (evt) => {
     evt.preventDefault();
     this.updateData({
-      type: evt.target.innerHTML
+      type: evt.target.innerHTML,
+      offers: this.#getNewOffers(evt.target.innerHTML)
     });
   }
 
   #changeDestinationHandler = (evt) => {
     evt.preventDefault();
     this.updateData({
-      pointDestination: evt.target.value
+      pointDestination: evt.target.value,
+      newPictures: this.#getNewDestination(evt.target.value).pictures,
+      newDescription: this.#getNewDestination(evt.target.value).description
     });
   }
 
-  static #getNewOffers = (type) => {
+  #getNewOffers = (type) => {
     const typesAndOffers = getOffersWithType();
     for (const element of typesAndOffers) {
       if (element.type === type) {
-        return typesAndOffers.offers;
+        return element.offers;
       }
     }
   }
 
-  static #getNewDestination = (oldDestination) => {
+  #getNewDestination = (oldDestination) => {
     let newDestination = getDestination();
     while (oldDestination !== newDestination.name) {
       newDestination = getDestination();
@@ -206,10 +224,18 @@ export default class FormEditingView extends SmartView {
     });
   }
 
+  #getOfferChecked = (evt) => {
+    if (evt.target.dataset.id === undefined) {
+      return evt.target.parentElement.dataset.id;
+    }
+    return evt.target.dataset.id;
+  }
+
   #offersChangeHandler = (evt) => {
     evt.preventDefault();
     this.updateData({
-      isOfferChecked: evt.target.htmlFor
+      isOfferChecked: this.#getOfferChecked(evt),
+      offers: deleteItemById(this._data.offers, this.#getOfferChecked(evt))
     });
   }
 
@@ -219,27 +245,19 @@ export default class FormEditingView extends SmartView {
 
   static parsePointToData = (point) => ({
     ...point,
-    newTypeRoute: point.type,
-    pointRoute: point.destination.name
+    pointDestination: point.destination.name
   });
 
   static parseDataToPoint = (data) => {
     const point = { ...data };
 
-    if (point.type !== point.newTypeRoute) {
-      point.type = point.newTypeRoute;
-      point.offers = this.#getNewOffers(point.type);
+    if (point.pointDestination !== point.destination.name) {
+      point.destination.name = point.pointDestination;
     }
 
-    if (point.destination.name !== point.pointRoute) {
-      point.destination.name = point.pointRoute;
-      const newDestination = this.#getNewDestination();
-      point.destination.pictures = newDestination.pictures;
-      point.destination.description = newDestination.description;
-    }
-
-    delete point.newTypeRoute;
-    delete point.pointRoute;
+    delete point.pointDestination;
+    delete point.newDescription;
+    delete point.newPictures;
 
     return point;
   }

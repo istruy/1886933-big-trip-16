@@ -7,7 +7,7 @@ export const DESCRIPTION = [
   'Phasellus eros mauris, condimentum sed nibh vitae, sodales efficitur ipsum.'
 ];
 export const OFFERS = [
-  'Add luggage', 'Switch to comfort class', 'Add meal', 'Add alcohol', 'Choose neighbor'
+  'Add luggage', 'Switch to comfort class', 'Add meal', 'Add alcohol', 'Choose neighbor', 'Change neighbor', 'Add book', 'Add music', 'Add pled', 'Change pled', 'Change alcohol'
 ];
 export const POINTS_DESTINATION = [
   'Amsterdam', 'Tokyo', 'Los-Angeles', 'Capetown', 'New-York'

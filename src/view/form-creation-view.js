@@ -153,7 +153,7 @@ export default class FormCreationView extends SmartView {
     this.element.querySelector('.event__type-group').addEventListener('click', this.#changeTypeRouteHandler);
     this.element.querySelector('.event__input--destination').addEventListener('change', this.#changeDestinationHandler);
     this.element.querySelector('.event__input--price').addEventListener('change', this.#priceChangeHandler);
-    this.element.querySelector('.event__available-offers').addEventListener('click', this.#offersChangeHandler);
+    //this.element.querySelector('.event__available-offers').addEventListener('click', this.#offersChangeHandler);
   }
 
 
