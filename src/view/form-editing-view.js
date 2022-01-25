@@ -1,15 +1,14 @@
 import { POINTS_DESTINATION, TYPE_ROUTE } from '../const.js';
 import { getOffersWithType, getDestination } from '../mock/mock.js';
-import { deleteItemById } from '../utils/common.js';
+import { getItemById, deleteItem } from '../utils/common.js';
 import { getYearMonthDaySlashFormat } from '../utils/point.js';
 import SmartView from './smart-view.js';
+import { getItemByType, getItemByIdAndType } from '../utils/point.js';
 
 const createFormEditingTemplate = (data) => {
 
-  const { basePrice, dateFrom, dateTo, destination, offers, type, pointDestination, newDescription, newPictures, isOfferChecked } = data;
+  const { basePrice, dateFrom, dateTo, destination, offers, type, pointDestination, newDescription, newPictures, checkedOffer } = data;
   const { description, name, pictures } = destination;
-
-  const offersItems = offers;
 
   const getDestinationTemplate = () => {
     let destinations = '';
@@ -41,13 +40,22 @@ const createFormEditingTemplate = (data) => {
 
   const getPointDestination = () => pointDestination === undefined ? name : pointDestination;
 
+  const checkOfferChecked = (id) => {
+    const item = getItemById(checkedOffer[0].offers, id);
+    return item !== -1 ? true : false;
+  }
+
   const getOffers = () => {
     let offerElement = '';
-    for (let i = 0; i < offersItems.length; i++) {
-      const { id, title, price } = offersItems[i];
-      let stateOffer = 'checked';
-      if (isOfferChecked === String(id)) {
-        stateOffer = '';
+
+    const items = getItemByType(type, offers);
+
+    for (const element of items.offers) {
+      const { id, title, price } = element;
+      let stateOffer = '';
+      if (checkedOffer !== undefined && checkedOffer.length !== 0) {
+        const t = checkOfferChecked(id);
+        stateOffer = t ? 'checked' : '';
       }
 
       offerElement += `<div class="event__offer-selector">
@@ -140,6 +148,9 @@ const createFormEditingTemplate = (data) => {
 };
 
 export default class FormEditingView extends SmartView {
+  #checkedOfferItems = new Array();
+  #items = new Array();
+
   constructor(point) {
     super();
     this._data = FormEditingView.parsePointToData(point);
@@ -154,6 +165,7 @@ export default class FormEditingView extends SmartView {
   restoreHandlers() {
     this.#setInnerHandlers();
     this.setFormSubmitHandler(this._callback.formSubmit);
+    this.setDeleteClickHandler(this._callback.deleteClick);
   }
 
   #setInnerHandlers = () => {
@@ -161,6 +173,7 @@ export default class FormEditingView extends SmartView {
     this.element.querySelector('.event__input--destination').addEventListener('change', this.#changeDestinationHandler);
     this.element.querySelector('.event__input--price').addEventListener('change', this.#priceChangeHandler);
     this.element.querySelector('.event__available-offers').addEventListener('click', this.#offersChangeHandler);
+
   }
 
   setFormSubmitHandler = (callback) => {
@@ -231,11 +244,37 @@ export default class FormEditingView extends SmartView {
     return evt.target.dataset.id;
   }
 
+  #addOrDeleteClickedOffers = (id) => {
+    const offersByType = getItemByType(this._data.type, this._data.offers);
+    const indexCheckedOffers = offersByType.offers.findIndex((item) => item.id === Number(id));
+
+
+    if (this.#checkedOfferItems.length === 0) {
+      this.#items.push(offersByType.offers[indexCheckedOffers]);
+      const item = { type: this._data.type, offers: this.#items };
+      this.#checkedOfferItems.push(item);
+    }
+    else {
+      const index = this.#checkedOfferItems[0].offers.findIndex((item) => item.id === Number(id));
+      if (index === -1) {
+        this.#items.push(offersByType.offers[indexCheckedOffers]);
+        console.log(this.#checkedOfferItems[0]);
+        this.#checkedOfferItems[0].offers.push(this.#items);
+        console.log(this.#checkedOfferItems[0].offers);
+
+      } else {
+        deleteItem(offersByType.offers, this.#checkedOfferItems[0].offers);
+      }
+    }
+
+    return this.#checkedOfferItems;
+  }
+
   #offersChangeHandler = (evt) => {
     evt.preventDefault();
+    this.#addOrDeleteClickedOffers(this.#getOfferChecked(evt));
     this.updateData({
-      isOfferChecked: this.#getOfferChecked(evt),
-      offers: deleteItemById(this._data.offers, this.#getOfferChecked(evt))
+      checkedOffer: this.#checkedOfferItems
     });
   }
 
@@ -245,7 +284,8 @@ export default class FormEditingView extends SmartView {
 
   static parsePointToData = (point) => ({
     ...point,
-    pointDestination: point.destination.name
+    pointDestination: point.destination.name,
+    checkedOffer: []
   });
 
   static parseDataToPoint = (data) => {
@@ -255,9 +295,15 @@ export default class FormEditingView extends SmartView {
       point.destination.name = point.pointDestination;
     }
 
+
+    if (JSON.stringify(point.offers) !== JSON.stringify(point.checkedOffer)) {
+      point.offers = point.checkedOffer;
+    }
+
     delete point.pointDestination;
     delete point.newDescription;
     delete point.newPictures;
+    delete point.checkedOffer;
 
     return point;
   }

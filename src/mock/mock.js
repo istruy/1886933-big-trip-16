@@ -93,7 +93,7 @@ const getPoint = () => {
     dateTo: generateDate()[1],
     destination: getDestination(),
     isFavorite: getRandomBoolean(),
-    offers: generateOffers(),
+    offers: getOffersWithType(),
     type: generateTypeRoute()
   };
   return point;

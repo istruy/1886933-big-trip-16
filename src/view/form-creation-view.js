@@ -1,53 +1,70 @@
-import { OFFERS, TYPE_ROUTE, POINTS_DESTINATION } from '../const.js';
-import { getYearMonthDaySlashFormat } from '../utils.js';
+import { TYPE_ROUTE, POINTS_DESTINATION } from '../const.js';
+import { getYearMonthDaySlashFormat } from '../utils/point.js';
 import { getOffersWithType, getDestination } from '../mock/mock.js';
 import dayjs from 'dayjs';
 import SmartView from './smart-view.js';
+import { getRandomInteger } from '../utils/common.js';
 
 const BLANK_POINT = {
   basePrice: 100,
   dateFrom: dayjs(),
   dateTo: dayjs(),
-  destination: POINTS_DESTINATION[0],
-  id: 1,
+  destination: getDestination(),
+  id: getRandomInteger(100, 600),
   isFavorite: false,
   offers: {},
   type: TYPE_ROUTE[0]
 };
 
-const createFormCreationTemplate = (pointRoute = {}) => {
+const createFormCreationTemplate = (data) => {
 
-  const { basePrice, dateFrom, dateTo, destination, offers, type } = pointRoute;
+  const { basePrice, dateFrom, dateTo, destination, offers, type, pointDestination, newDescription, newPictures, isOfferChecked } = data;
   const { description, name, pictures } = destination;
+
+  const offersItems = offers;
 
   const getDestinationTemplate = () => {
     let destinations = '';
-    for (let i = 0; i < OFFERS.length; i++) {
-      destinations += `<option value="${OFFERS[i]}"></option>`;
+    for (let i = 0; i < POINTS_DESTINATION.length; i++) {
+      destinations += `<option value="${POINTS_DESTINATION[i]}"></option>`;
     }
     return destinations;
   };
 
   const getInfoAboutCity = () => {
+    let newPointDescription = description;
+    let newPointPictures = pictures;
+
+    if (newDescription !== undefined && newPictures !== undefined) {
+      newPointDescription = newDescription;
+      newPointPictures = newPictures;
+    }
     let info = `<h3 class="event__section-title  event__section-title--destination">Destination</h3>
-    <p class="event__destination-description">${description}</p>
+    <p class="event__destination-description">${newPointDescription}</p>
     <div class="event__photos-container">
       <div class="event__photos-tape">`;
 
-    for (const element of pictures) {
+    for (const element of newPointPictures) {
       const { src } = element;
       info += `<img class="event__photo" src="${src}" alt="Event photo">`;
     }
     return info;
   };
 
+  const getPointDestination = () => pointDestination === undefined ? name : pointDestination;
+
   const getOffers = () => {
     let offerElement = '';
-    for (const element of offers) {
-      const { title, price } = element;
+    for (let i = 0; i < offersItems.length; i++) {
+      const { id, title, price } = offersItems[i];
+      let stateOffer = '';
+      if (isOfferChecked === String(id)) {
+        stateOffer = 'checked';
+      }
+
       offerElement += `<div class="event__offer-selector">
-          <input class="event__offer-checkbox  visually-hidden" id="event-offer-luggage-1" type="checkbox" name="event-offer-luggage" checked>
-          <label class="event__offer-label" for="event-offer-luggage-1">
+          <input class="event__offer-checkbox  visually-hidden" id="event-offer-luggage-${id}" type="checkbox" name="event-offer-luggage" ${stateOffer}>
+          <label class="event__offer-label" for="event-offer-luggage-${id}" data-id=${id}>
             <span class="event__offer-title">${title}</span>
             &plus;&euro;&nbsp;
             <span class="event__offer-price">${price}</span>
@@ -137,6 +154,7 @@ export default class FormCreationView extends SmartView {
   constructor(point = BLANK_POINT) {
     super();
     this._data = FormCreationView.parsePointToData(point);
+
     this.#setInnerHandlers();
   }
 
@@ -147,15 +165,16 @@ export default class FormCreationView extends SmartView {
   restoreHandlers() {
     this.#setInnerHandlers();
     this.setFormSubmitHandler(this._callback.formSubmit);
+    this.setDeleteClickHandler(this._callback.deleteClick);
   }
 
   #setInnerHandlers = () => {
     this.element.querySelector('.event__type-group').addEventListener('click', this.#changeTypeRouteHandler);
     this.element.querySelector('.event__input--destination').addEventListener('change', this.#changeDestinationHandler);
     this.element.querySelector('.event__input--price').addEventListener('change', this.#priceChangeHandler);
-    //this.element.querySelector('.event__available-offers').addEventListener('click', this.#offersChangeHandler);
-  }
+    this.element.querySelector('.event__available-offers').addEventListener('click', this.#offersChangeHandler);
 
+  }
 
   setFormSubmitHandler = (callback) => {
     this._callback.formSubmit = callback;
@@ -164,7 +183,7 @@ export default class FormCreationView extends SmartView {
 
   #formSubmitHandler = (evt) => {
     evt.preventDefault();
-    this._callback.formSubmit(FormCreationView.parseDataToPoint(this._data));
+    this._callback.formSubmit(FormEditingView.parseDataToPoint(this._data));
   }
 
   setDeleteClickHandler = (callback) => {
@@ -180,27 +199,30 @@ export default class FormCreationView extends SmartView {
   #changeTypeRouteHandler = (evt) => {
     evt.preventDefault();
     this.updateData({
-      type: evt.target.innerHTML
+      type: evt.target.innerHTML,
+      offers: this.#getNewOffers(evt.target.innerHTML)
     });
   }
 
   #changeDestinationHandler = (evt) => {
     evt.preventDefault();
     this.updateData({
-      pointDestination: evt.target.value
+      pointDestination: evt.target.value,
+      newPictures: this.#getNewDestination(evt.target.value).pictures,
+      newDescription: this.#getNewDestination(evt.target.value).description
     });
   }
 
-  static #getNewOffers = (type) => {
+  #getNewOffers = (type) => {
     const typesAndOffers = getOffersWithType();
     for (const element of typesAndOffers) {
       if (element.type === type) {
-        return typesAndOffers.offers;
+        return element.offers;
       }
     }
   }
 
-  static #getNewDestination = (oldDestination) => {
+  #getNewDestination = (oldDestination) => {
     let newDestination = getDestination();
     while (oldDestination !== newDestination.name) {
       newDestination = getDestination();
@@ -215,40 +237,40 @@ export default class FormCreationView extends SmartView {
     });
   }
 
+  #getOfferChecked = (evt) => {
+    if (evt.target.dataset.id === undefined) {
+      return evt.target.parentElement.dataset.id;
+    }
+    return evt.target.dataset.id;
+  }
+
   #offersChangeHandler = (evt) => {
     evt.preventDefault();
     this.updateData({
-      isOfferChecked: evt.target.htmlFor
+      isOfferChecked: this.#getOfferChecked(evt),
+      offers: deleteItemById(this._data.offers, this.#getOfferChecked(evt))
     });
   }
 
   reset = (point) => {
-    this.updateData(FormCreationView.parsePointToData(point));
+    this.updateData(FormEditingView.parsePointToData(point));
   }
 
   static parsePointToData = (point) => ({
     ...point,
-    newTypeRoute: point.type,
-    pointRoute: point.destination.name
+    pointDestination: point.destination.name
   });
 
   static parseDataToPoint = (data) => {
     const point = { ...data };
 
-    if (point.type !== point.newTypeRoute) {
-      point.type = point.newTypeRoute;
-      point.offers = this.#getNewOffers(point.type);
+    if (point.pointDestination !== point.destination.name) {
+      point.destination.name = point.pointDestination;
     }
 
-    if (point.destination.name !== point.pointRoute) {
-      point.destination.name = point.pointRoute;
-      const newDestination = this.#getNewDestination();
-      point.destination.pictures = newDestination.pictures;
-      point.destination.description = newDestination.description;
-    }
-
-    delete point.newTypeRoute;
-    delete point.pointRoute;
+    delete point.pointDestination;
+    delete point.newDescription;
+    delete point.newPictures;
 
     return point;
   }

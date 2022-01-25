@@ -1,5 +1,6 @@
 import { getYearMonthDayFormat, getYearMonthDayHourMinuteFormat, getMonthDayFormat, getHourMinute } from '../utils/point.js';
 import AbstractView from './abstract-view';
+import { getItemByType } from '../utils/point.js';
 
 const createPointRouteTemplate = (pointRoute) => {
 
@@ -8,7 +9,8 @@ const createPointRouteTemplate = (pointRoute) => {
 
   const getOfferElement = () => {
     let offerElement = '';
-    for (const element of offers) {
+    const items = getItemByType(type, offers);
+    for (const element of items.offers) {
       const { title, price } = element;
       offerElement += `<li class="event__offer">
                         <span class="event__offer-title">${title}</span>
