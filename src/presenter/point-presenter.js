@@ -1,15 +1,17 @@
 import PointRouteView from '../view/point-route-view';
 import FormEditingView from '../view/form-editing-view';
 import FormCreationView from '../view/form-creation-view';
-import { removeElement, render, RenderPosition, replace } from '../utils/render.js';
+import { removeElement, render, RenderPosition, replace, add } from '../utils/render.js';
 
 const Mode = {
   DEFAULT: 'DEFAULT',
-  EDITING: 'EDITING'
+  EDITING: 'EDITING',
+  CREATING: 'CREATING'
 };
 
 export default class PointPresenter {
   #point = null;
+  #offers = [];
   #changeData = null;
   #pointListContainer = null;
   #changeMode = null;
@@ -21,7 +23,8 @@ export default class PointPresenter {
 
   #mode = Mode.DEFAULT;
 
-  constructor(pointListContainer, changeData, changeMode, deleteData) {
+  constructor(offers, pointListContainer, changeData, changeMode, deleteData) {
+    this.#offers = offers;
     this.#pointListContainer = pointListContainer;
     this.#changeData = changeData;
     this.#changeMode = changeMode;
@@ -33,19 +36,19 @@ export default class PointPresenter {
 
     const prevPointRoute = this.#pointComponent;
     const prevPointEditRoute = this.#pointEditComponent;
+    const prevPointCreatePoint = this.#pointCreateComponent;
 
     this.#pointComponent = new PointRouteView(point);
-    this.#pointEditComponent = new FormEditingView(point);
-    this.#pointCreateComponent = new FormCreationView();
+    this.#pointEditComponent = new FormEditingView(this.#offers, point);
+    this.#pointCreateComponent = new FormCreationView(this.#offers);
 
     this.#pointComponent.setEditClickHandler(this.#handleEditClick);
     this.#pointEditComponent.setFormSubmitHandler(this.#handleFormSubmit);
     this.#pointComponent.setFavoriteClickHandler(this.#handleFavoriteClick);
     this.#pointEditComponent.setDeleteClickHandler(this.#handleDeleteClick);
-    //this.setCreateClickHandler(this.#handleCreateClick);
+    document.querySelector('.trip-main__event-add-btn').addEventListener('click', this.#handleCreateClick);
 
-
-    if (prevPointRoute === null || prevPointEditRoute === null) {
+    if (prevPointRoute === null || prevPointEditRoute === null || prevPointCreatePoint === null) {
       render(this.#pointListContainer, RenderPosition.BEFOREEND, this.#pointComponent);
       return;
     }
@@ -58,8 +61,13 @@ export default class PointPresenter {
       replace(this.#pointEditComponent, prevPointEditRoute);
     }
 
+    if (this.#mode === Mode.CREATING) {
+      replace(this.#pointEditComponent, prevPointRoute);
+    }
+
     removeElement(prevPointRoute);
     removeElement(prevPointEditRoute);
+    removeElement(prevPointCreatePoint)
   }
 
   resetView = () => {
@@ -72,23 +80,13 @@ export default class PointPresenter {
   destroy = () => {
     removeElement(this.#pointComponent);
     removeElement(this.#pointEditComponent);
+    removeElement(this.#pointCreateComponent);
   }
 
-  // setCreateClickHandler = (callback) => {
-  //   this._callback.createClick = callback;
-  //   document.querySelector('.trip-main__event-add-btn').addEventListener('click', this.#createClickHandler);
-  // }
-
-  // #createClickHandler = (evt) => {
-  //   evt.preventDefault();
-  //   this._callback.createClick();
-  // }
-
   #replaceNewPointToForm = () => {
-    replace(this.#pointCreateComponent, this.#pointComponent);
+    add(this.#pointCreateComponent, this.#pointComponent);
     document.addEventListener('keydown', this.#escDownHandler);
-    this.#changeMode();
-    this.#mode = Mode.EDITING;
+    this.#mode = Mode.CREATING;
   }
 
   #handleCreateClick = () => {
@@ -131,7 +129,7 @@ export default class PointPresenter {
       evt.preventDefault();
       this.#replaceFormToPoint();
       this.#pointEditComponent.reset(this.#point);
+      //this.#pointCreateComponent.reset(this.#point);
     }
   }
-
 }

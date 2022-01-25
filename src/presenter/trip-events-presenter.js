@@ -11,6 +11,7 @@ import PointPresenter from './point-presenter';
 
 export default class TripEventsPresenter {
   #tripEvents = null;
+  #offers = [];
 
   #boardComponent = new BoardView();
   #tripEventsComponent = new TripEventsView();
@@ -22,8 +23,9 @@ export default class TripEventsPresenter {
   #currentSortType = SORT_TYPES.DAY;
   #sourceSortPoints = null;
 
-  constructor(boardContainer) {
+  constructor(boardContainer, offers) {
     this.#tripEvents = boardContainer;
+    this.#offers = offers;
   }
 
   init = (tripEvents) => {
@@ -41,7 +43,7 @@ export default class TripEventsPresenter {
   }
 
   #renderPoint = (point) => {
-    const pointPresenter = new PointPresenter(this.#tripEventsComponent, this.#handlePointChange, this.#handleModeChange, this.#handlePointDelete);
+    const pointPresenter = new PointPresenter(this.#offers, this.#tripEventsComponent, this.#handlePointChange, this.#handleModeChange, this.#handlePointDelete);
     pointPresenter.init(point);
     this.#pointPresenter.set(point.id, pointPresenter);
   }

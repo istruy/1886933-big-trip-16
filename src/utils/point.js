@@ -26,6 +26,5 @@ export const getItemByType = (typeItem, allItems) => {
 export const getItemByIdAndType = (allItems, type, id) => {
   const el = getItemByType(type, allItems);
   const item = getItemById(el.offers, Number(id));
-  console.log(item);
   return item;
 }

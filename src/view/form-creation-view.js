@@ -1,6 +1,6 @@
-import { TYPE_ROUTE, POINTS_DESTINATION } from '../const.js';
-import { getYearMonthDaySlashFormat } from '../utils/point.js';
-import { getOffersWithType, getDestination } from '../mock/mock.js';
+import { PointTypes, PointTypesNames, PointDestination } from '../const.js';
+import { getYearMonthDaySlashFormat, getItemByType } from '../utils/point.js';
+import { getDestination} from '../mock/mock.js';
 import dayjs from 'dayjs';
 import SmartView from './smart-view.js';
 import { getRandomInteger } from '../utils/common.js';
@@ -12,21 +12,19 @@ const BLANK_POINT = {
   destination: getDestination(),
   id: getRandomInteger(100, 600),
   isFavorite: false,
-  offers: {},
-  type: TYPE_ROUTE[0]
+  offers: [],
+  type: PointTypes.Bus
 };
 
 const createFormCreationTemplate = (data) => {
 
-  const { basePrice, dateFrom, dateTo, destination, offers, type, pointDestination, newDescription, newPictures, isOfferChecked } = data;
+  const { basePrice, dateFrom, dateTo, destination, checkedOffers, type, pointDestination, newDescription, newPictures, offersWithType } = data;
   const { description, name, pictures } = destination;
-
-  const offersItems = offers;
 
   const getDestinationTemplate = () => {
     let destinations = '';
-    for (let i = 0; i < POINTS_DESTINATION.length; i++) {
-      destinations += `<option value="${POINTS_DESTINATION[i]}"></option>`;
+    for (const el of Object.values(PointDestination)) {
+      destinations += `<option value="${el}"></option>`;
     }
     return destinations;
   };
@@ -53,13 +51,22 @@ const createFormCreationTemplate = (data) => {
 
   const getPointDestination = () => pointDestination === undefined ? name : pointDestination;
 
+  const checkOfferChecked = (id) => {
+    const item = getItemById(checkedOffers, id);
+    return item !== -1 ? true : false;
+  }
+
   const getOffers = () => {
     let offerElement = '';
-    for (let i = 0; i < offersItems.length; i++) {
-      const { id, title, price } = offersItems[i];
+
+    const possibleOffers = getItemByType(type, offersWithType).offers;
+
+    for (const offer of possibleOffers) {
+      const { id, title, price } = offer;
       let stateOffer = '';
-      if (isOfferChecked === String(id)) {
-        stateOffer = 'checked';
+      if (checkedOffers !== undefined && checkedOffers.length !== 0) {
+        const t = checkOfferChecked(id);
+        stateOffer = t ? 'checked' : '';
       }
 
       offerElement += `<div class="event__offer-selector">
@@ -82,12 +89,13 @@ const createFormCreationTemplate = (data) => {
 
   const getActiveType = () => {
     let typeRoutes = '';
-    for (let i = 0; i < TYPE_ROUTE.length; i++) {
+    for (const pointType of Object.values(PointTypes)) {
       typeRoutes += ` <div class="event__type-item">
-      <input id="event-type-${TYPE_ROUTE[i]}-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="${TYPE_ROUTE[i]}" ${type === TYPE_ROUTE[i] ? 'checked' : ''}>
-      <label class="event__type-label  event__type-label--${TYPE_ROUTE[i]}" for="event-type-${TYPE_ROUTE[i]}-1">${TYPE_ROUTE[i]}</label>
+      <input id="event-type-${pointType}-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="${pointType}" ${type === pointType ? 'checked' : ''}>
+      <label class="event__type-label  event__type-label--${pointType}" for="event-type-${pointType}-1">${PointTypesNames[pointType]}</label>
       </div>`;
     }
+
     return typeRoutes;
   };
 
@@ -112,7 +120,7 @@ const createFormCreationTemplate = (data) => {
                     <label class="event__label  event__type-output" for="event-destination-1">
                       ${type}
                     </label>
-                    <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${name}" list="destination-list-1">
+                    <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${getPointDestination()}" list="destination-list-1">
                     <datalist id="destination-list-1">
                     ${getDestinationTemplate()}
                     </datalist>
@@ -151,10 +159,11 @@ const createFormCreationTemplate = (data) => {
 };
 
 export default class FormCreationView extends SmartView {
-  constructor(point = BLANK_POINT) {
+  #offers = [];
+  constructor(offers, point = BLANK_POINT) {
     super();
-    this._data = FormCreationView.parsePointToData(point);
-
+    this.#offers = offers;
+    this._data = FormCreationView.parsePointToData(point, offers);
     this.#setInnerHandlers();
   }
 
@@ -173,7 +182,6 @@ export default class FormCreationView extends SmartView {
     this.element.querySelector('.event__input--destination').addEventListener('change', this.#changeDestinationHandler);
     this.element.querySelector('.event__input--price').addEventListener('change', this.#priceChangeHandler);
     this.element.querySelector('.event__available-offers').addEventListener('click', this.#offersChangeHandler);
-
   }
 
   setFormSubmitHandler = (callback) => {
@@ -183,7 +191,7 @@ export default class FormCreationView extends SmartView {
 
   #formSubmitHandler = (evt) => {
     evt.preventDefault();
-    this._callback.formSubmit(FormEditingView.parseDataToPoint(this._data));
+    this._callback.formSubmit(FormCreationView.parseDataToPoint(this._data));
   }
 
   setDeleteClickHandler = (callback) => {
@@ -198,9 +206,10 @@ export default class FormCreationView extends SmartView {
 
   #changeTypeRouteHandler = (evt) => {
     evt.preventDefault();
+    const type = evt.target.parentElement.querySelector('input').value
     this.updateData({
-      type: evt.target.innerHTML,
-      offers: this.#getNewOffers(evt.target.innerHTML)
+      type,
+      checkedOffers: []
     });
   }
 
@@ -211,15 +220,6 @@ export default class FormCreationView extends SmartView {
       newPictures: this.#getNewDestination(evt.target.value).pictures,
       newDescription: this.#getNewDestination(evt.target.value).description
     });
-  }
-
-  #getNewOffers = (type) => {
-    const typesAndOffers = getOffersWithType();
-    for (const element of typesAndOffers) {
-      if (element.type === type) {
-        return element.offers;
-      }
-    }
   }
 
   #getNewDestination = (oldDestination) => {
@@ -244,33 +244,54 @@ export default class FormCreationView extends SmartView {
     return evt.target.dataset.id;
   }
 
+  #addOrDeleteClickedOffers = (id) => {
+    const offersByType = getItemByType(this._data.type, this._data.offersWithType);
+    const checkedOffer = offersByType.offers.find((it) => it.id === Number(id));
+
+    const index = this._data.checkedOffers.findIndex((item) => item.id === checkedOffer.id);
+    if (index === -1) {
+      this._data.checkedOffers.push(checkedOffer);
+    } else {
+      this._data.checkedOffers = deleteItem(this._data.checkedOffers, checkedOffer);
+    }
+  }
+
   #offersChangeHandler = (evt) => {
     evt.preventDefault();
+
+    this.#addOrDeleteClickedOffers(this.#getOfferChecked(evt));
     this.updateData({
-      isOfferChecked: this.#getOfferChecked(evt),
-      offers: deleteItemById(this._data.offers, this.#getOfferChecked(evt))
+      checkedOffers: this._data.checkedOffers
     });
   }
 
   reset = (point) => {
-    this.updateData(FormEditingView.parsePointToData(point));
+    this.updateData(FormCreationView.parsePointToData(point, this.#offers));
   }
 
-  static parsePointToData = (point) => ({
+  static parsePointToData = (point, offers) => ({
     ...point,
-    pointDestination: point.destination.name
+    pointDestination: point.destination.name,
+    checkedOffers: point.offers.slice(0),
+    offersWithType: offers
   });
 
   static parseDataToPoint = (data) => {
+
     const point = { ...data };
 
     if (point.pointDestination !== point.destination.name) {
       point.destination.name = point.pointDestination;
     }
 
+    if (JSON.stringify(point.offers) !== JSON.stringify(point.checkedOffers)) {
+      point.offers = point.checkedOffers.slice(0);
+    }
+
     delete point.pointDestination;
     delete point.newDescription;
     delete point.newPictures;
+    delete point.checkedOffers;
 
     return point;
   }

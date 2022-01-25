@@ -1,7 +1,3 @@
-// Функция из интернета по генерации случайного числа из диапазона
-
-import { getItemByType } from "./point";
-
 // Источник - https://github.com/you-dont-need/You-Dont-Need-Lodash-Underscore#_random
 export const getRandomInteger = (a = 0, b = 1) => {
   const lower = Math.ceil(Math.min(a, b));
@@ -14,6 +10,13 @@ export const getRandomElementFromArray = (elements) => {
   const randomIndex = getRandomInteger(0, elements.length - 1);
   return elements[randomIndex];
 };
+
+export const getRandomElementsFromArray = (elements) => {
+  // Shuffle array
+  const shuffled = elements.sort(() => 0.5 - Math.random());
+  const randomLength = getRandomInteger(0, elements.length - 1);
+  return shuffled.slice(0, randomLength);
+}
 
 export const getRandomBoolean = () => Math.random() < 0.5;
 
@@ -32,6 +35,7 @@ export const updateItem = (items, update) => {
 };
 
 export const deleteItem = (items, deletedItem) => {
+  debugger;
   const index = items.findIndex((item) => item.id === deletedItem.id);
 
   if (index === -1) {
