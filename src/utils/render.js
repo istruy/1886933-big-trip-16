@@ -60,8 +60,7 @@ export const add = (newElement, oldElement) => {
   if (!(parent.firstChild.nextSibling.outerHTML === newChild.outerHTML)) {
     parent.prepend(newChild);
   }
-
-}
+};
 
 export const removeElement = (component) => {
   if (component === null) {

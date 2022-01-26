@@ -16,7 +16,7 @@ export const PointDestination = {
   LosAngeles: 'Los-Angeles',
   Capetown: 'Capetown',
   NewYork: 'New-York'
-}
+};
 
 export const PointTypes = {
   Taxi: 'taxi',
@@ -28,7 +28,7 @@ export const PointTypes = {
   Ship: 'ship',
   Drive: 'drive',
   Restaurant: 'restaurant'
-}
+};
 
 export const PointTypesNames = {
   [PointTypes.Taxi]: 'Taxi',
@@ -40,7 +40,7 @@ export const PointTypesNames = {
   [PointTypes.Ship]: 'Ship',
   [PointTypes.Drive]: 'Drive',
   [PointTypes.Restaurant]: 'Restaurant'
-}
+};
 
 export const POINTS_COUNT = 15;
 

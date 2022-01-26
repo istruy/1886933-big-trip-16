@@ -12,6 +12,7 @@ const Mode = {
 export default class PointPresenter {
   #point = null;
   #offers = [];
+  #destinations = [];
   #changeData = null;
   #pointListContainer = null;
   #changeMode = null;
@@ -23,8 +24,9 @@ export default class PointPresenter {
 
   #mode = Mode.DEFAULT;
 
-  constructor(offers, pointListContainer, changeData, changeMode, deleteData) {
+  constructor(offers, destinations, pointListContainer, changeData, changeMode, deleteData) {
     this.#offers = offers;
+    this.#destinations = destinations;
     this.#pointListContainer = pointListContainer;
     this.#changeData = changeData;
     this.#changeMode = changeMode;
@@ -39,11 +41,12 @@ export default class PointPresenter {
     const prevPointCreatePoint = this.#pointCreateComponent;
 
     this.#pointComponent = new PointRouteView(point);
-    this.#pointEditComponent = new FormEditingView(this.#offers, point);
-    this.#pointCreateComponent = new FormCreationView(this.#offers);
+    this.#pointEditComponent = new FormEditingView(this.#offers, this.#destinations, point);
+    this.#pointCreateComponent = new FormCreationView(this.#offers, this.#destinations);
 
     this.#pointComponent.setEditClickHandler(this.#handleEditClick);
     this.#pointEditComponent.setFormSubmitHandler(this.#handleFormSubmit);
+    this.#pointCreateComponent.setFormSubmitHandler(this.#handleFormSubmit);
     this.#pointComponent.setFavoriteClickHandler(this.#handleFavoriteClick);
     this.#pointEditComponent.setDeleteClickHandler(this.#handleDeleteClick);
     document.querySelector('.trip-main__event-add-btn').addEventListener('click', this.#handleCreateClick);
@@ -67,7 +70,7 @@ export default class PointPresenter {
 
     removeElement(prevPointRoute);
     removeElement(prevPointEditRoute);
-    removeElement(prevPointCreatePoint)
+    removeElement(prevPointCreatePoint);
   }
 
   resetView = () => {
@@ -102,6 +105,7 @@ export default class PointPresenter {
 
   #replaceFormToPoint = () => {
     replace(this.#pointComponent, this.#pointEditComponent);
+    replace(this.#pointComponent, this.#pointCreateComponent);
     document.removeEventListener('keydown', this.#escDownHandler);
     this.#mode = Mode.DEFAULT;
   }
@@ -129,7 +133,7 @@ export default class PointPresenter {
       evt.preventDefault();
       this.#replaceFormToPoint();
       this.#pointEditComponent.reset(this.#point);
-      //this.#pointCreateComponent.reset(this.#point);
+      this.#pointCreateComponent.reset(this.#point);
     }
   }
 }

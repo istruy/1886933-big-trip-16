@@ -36,18 +36,6 @@ const generateTypeRoute = () => getRandomElementFromArray(Object.values(PointTyp
 
 /** DESTINATIONS */
 
-export const getDestinations = () => {
-  const destintions = new Array();
-  const randomNumber = getRandomInteger(5, 15);
-  for (let i = 0; i < randomNumber; i++) {
-    const destination = getDestination();
-    destintions.push(destination);
-  }
-  return destintions;
-}
-
-const generatePointDestination = () => getRandomElementFromArray(Object.values(PointDestination));
-
 const getDescription = () => {
   let randomDescription = '';
   for (let i = 0; i < DESCRIPTION.length; i++) {
@@ -55,6 +43,8 @@ const getDescription = () => {
   }
   return randomDescription;
 };
+
+const generatePointDestination = () => getRandomElementFromArray(Object.values(PointDestination));
 
 const getPicture = () => {
   const pictures = {
@@ -80,6 +70,16 @@ export const getDestination = () => {
     pictures: generateImagesDestination()
   };
   return destination;
+};
+
+export const getDestinations = () => {
+  const destintions = new Array();
+  const randomNumber = getRandomInteger(5, 15);
+  for (let i = 0; i < randomNumber; i++) {
+    const destination = getDestination();
+    destintions.push(destination);
+  }
+  return destintions;
 };
 
 /** DATE */

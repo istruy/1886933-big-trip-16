@@ -16,7 +16,7 @@ export const getRandomElementsFromArray = (elements) => {
   const shuffled = elements.sort(() => 0.5 - Math.random());
   const randomLength = getRandomInteger(0, elements.length - 1);
   return shuffled.slice(0, randomLength);
-}
+};
 
 export const getRandomBoolean = () => Math.random() < 0.5;
 
@@ -35,7 +35,6 @@ export const updateItem = (items, update) => {
 };
 
 export const deleteItem = (items, deletedItem) => {
-  debugger;
   const index = items.findIndex((item) => item.id === deletedItem.id);
 
   if (index === -1) {
@@ -50,6 +49,15 @@ export const deleteItem = (items, deletedItem) => {
 
 export const getItemById = (items, id) => {
   const index = items.findIndex((item) => item.id === id);
+  if (index === -1) {
+    return -1;
+  }
+
+  return items[index];
+};
+
+export const getItemByName = (items, name) => {
+  const index = items.findIndex((item) => item.name === name);
   if (index === -1) {
     return -1;
   }

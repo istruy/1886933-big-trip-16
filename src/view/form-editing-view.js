@@ -1,14 +1,17 @@
 import { PointTypes, PointTypesNames, PointDestination } from '../const.js';
-import { getDestination } from '../mock/mock.js';
-import { getItemById, deleteItem } from '../utils/common.js';
+import { getItemById, deleteItem, getItemByName } from '../utils/common.js';
 import { getYearMonthDaySlashFormat } from '../utils/point.js';
 import SmartView from './smart-view.js';
 import { getItemByType } from '../utils/point.js';
 
 const createFormEditingTemplate = (data) => {
 
-  const { basePrice, dateFrom, dateTo, destination, checkedOffers, type, pointDestination, newDescription, newPictures, offersWithType } = data;
+  const { basePrice, dateFrom, dateTo, destination, checkedOffers, type, pointDestination, newDescription, newPictures, offersWithType, allDestinations } = data;
   const { description, name, pictures } = destination;
+
+  const getRandomDestination = () => {
+    return getItemByName(allDestinations, name);
+  }
 
   const getDestinationTemplate = () => {
     let destinations = '';
@@ -42,8 +45,8 @@ const createFormEditingTemplate = (data) => {
 
   const checkOfferChecked = (id) => {
     const item = getItemById(checkedOffers, id);
-    return item !== -1 ? true : false;
-  }
+    return item !== -1;
+  };
 
   const getOffers = () => {
     let offerElement = '';
@@ -150,11 +153,13 @@ const createFormEditingTemplate = (data) => {
 
 export default class FormEditingView extends SmartView {
   #offers = [];
+  #destinations = [];
 
-  constructor(offers, point) {
+  constructor(offers, destinations, point) {
     super();
     this.#offers = offers;
-    this._data = FormEditingView.parsePointToData(point, this.#offers);
+    this.#destinations = destinations;
+    this._data = FormEditingView.parsePointToData(point, this.#offers, this.#destinations);
 
     this.#setInnerHandlers();
   }
@@ -198,7 +203,7 @@ export default class FormEditingView extends SmartView {
 
   #changeTypeRouteHandler = (evt) => {
     evt.preventDefault();
-    const type = evt.target.parentElement.querySelector('input').value
+    const type = evt.target.parentElement.querySelector('input').value;
     this.updateData({
       type,
       checkedOffers: []
@@ -207,19 +212,17 @@ export default class FormEditingView extends SmartView {
 
   #changeDestinationHandler = (evt) => {
     evt.preventDefault();
+    const newDestination = this.#getNewDestination(evt.target.value);
     this.updateData({
-      pointDestination: evt.target.value,
-      newPictures: this.#getNewDestination(evt.target.value).pictures,
-      newDescription: this.#getNewDestination(evt.target.value).description
+      pointDestination: newDestination.name,
+      newPictures: newDestination.pictures,
+      newDescription: newDestination.description
     });
   }
 
-  #getNewDestination = (oldDestination) => {
-    let newDestination = getDestination();
-    while (oldDestination !== newDestination.name) {
-      newDestination = getDestination();
-    }
-    return newDestination;
+  #getNewDestination = (nameNewldDestination) => {
+    const checkedDestination = this._data.allDestinations.find((it) => it.name === nameNewldDestination);
+    return checkedDestination;
   }
 
   #priceChangeHandler = (evt) => {
@@ -250,7 +253,6 @@ export default class FormEditingView extends SmartView {
 
   #offersChangeHandler = (evt) => {
     evt.preventDefault();
-
     this.#addOrDeleteClickedOffers(this.#getOfferChecked(evt));
     this.updateData({
       checkedOffers: this._data.checkedOffers
@@ -258,14 +260,15 @@ export default class FormEditingView extends SmartView {
   }
 
   reset = (point) => {
-    this.updateData(FormEditingView.parsePointToData(point, this.#offers));
+    this.updateData(FormEditingView.parsePointToData(point, this.#offers, this.#destinations));
   }
 
-  static parsePointToData = (point, offers) => ({
+  static parsePointToData = (point, offers, destinations) => ({
     ...point,
     pointDestination: point.destination.name,
     checkedOffers: point.offers.slice(0),
-    offersWithType: offers
+    offersWithType: offers,
+    allDestinations: destinations
   });
 
   static parseDataToPoint = (data) => {
@@ -283,6 +286,7 @@ export default class FormEditingView extends SmartView {
     delete point.newDescription;
     delete point.newPictures;
     delete point.checkedOffers;
+    delete point.allDestinations;
 
     return point;
   }

@@ -16,7 +16,7 @@ const siteFilterElement = document.querySelector('.trip-controls__filters');
 render(siteMenuElement, RenderPosition.BEFOREEND, new SiteMenuView());
 render(siteFilterElement, RenderPosition.BEFOREEND, new FilterView());
 
-const tripEventsPresenter = new TripEventsPresenter(siteMainElement, offers);
+const tripEventsPresenter = new TripEventsPresenter(siteMainElement, offers, destinations);
 tripEventsPresenter.init(points);
 
 const detailsTripElement = document.querySelector('.trip-main');

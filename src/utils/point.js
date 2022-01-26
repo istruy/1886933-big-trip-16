@@ -21,10 +21,10 @@ export const sortTime = (pointA, pointB) => dayjs(pointA.dateFrom).diff(pointB.d
 export const getItemByType = (typeItem, allItems) => {
   const itemIndex = allItems.findIndex((item) => item.type === typeItem);
   return allItems[itemIndex];
-}
+};
 
 export const getItemByIdAndType = (allItems, type, id) => {
   const el = getItemByType(type, allItems);
   const item = getItemById(el.offers, Number(id));
   return item;
-}
+};
