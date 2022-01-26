@@ -6,10 +6,10 @@ import { getItemByType } from '../utils/point.js';
 
 const createFormEditingTemplate = (data) => {
 
-  const { basePrice, dateFrom, dateTo, destination, checkedOffers, type, pointDestination, newDescription, newPictures, offersWithType, allDestinations } = data;
+  const { basePrice, dateFrom, dateTo, destination, checkedOffers, type, newDestination, offersWithType, allDestinations } = data;
   const { description, name, pictures } = destination;
 
-  const getRandomDestination = () => {
+  const getDestination = () => {
     return getItemByName(allDestinations, name);
   }
 
@@ -22,26 +22,28 @@ const createFormEditingTemplate = (data) => {
   };
 
   const getInfoAboutCity = () => {
-    let newPointDescription = description;
-    let newPointPictures = pictures;
+    const destinations = getDestination();
+    const pointDescription = destinations.description;
+    const pointPictures = destinations.pictures;
 
-    if (newDescription !== undefined && newPictures !== undefined) {
-      newPointDescription = newDescription;
-      newPointPictures = newPictures;
+    if (newDestination.description !== undefined && newDestination.pictures !== undefined) {
+      pointDescription = newDestination.description;
+      pointPictures = newDestination.pictures;
     }
+
     let info = `<h3 class="event__section-title  event__section-title--destination">Destination</h3>
-    <p class="event__destination-description">${newPointDescription}</p>
+    <p class="event__destination-description">${pointDescription}</p>
     <div class="event__photos-container">
       <div class="event__photos-tape">`;
 
-    for (const element of newPointPictures) {
+    for (const element of pointPictures) {
       const { src } = element;
       info += `<img class="event__photo" src="${src}" alt="Event photo">`;
     }
     return info;
   };
 
-  const getPointDestination = () => pointDestination === undefined ? name : pointDestination;
+  const getPointDestination = () => newDestination.name === undefined ? name : newDestination.name;
 
   const checkOfferChecked = (id) => {
     const item = getItemById(checkedOffers, id);
@@ -212,11 +214,8 @@ export default class FormEditingView extends SmartView {
 
   #changeDestinationHandler = (evt) => {
     evt.preventDefault();
-    const newDestination = this.#getNewDestination(evt.target.value);
     this.updateData({
-      pointDestination: newDestination.name,
-      newPictures: newDestination.pictures,
-      newDescription: newDestination.description
+      newDestination: this.#getNewDestination(evt.target.value),
     });
   }
 
@@ -282,9 +281,7 @@ export default class FormEditingView extends SmartView {
       point.offers = point.checkedOffers.slice(0);
     }
 
-    delete point.pointDestination;
-    delete point.newDescription;
-    delete point.newPictures;
+    delete point.newDestination;
     delete point.checkedOffers;
     delete point.allDestinations;
 
