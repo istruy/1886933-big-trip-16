@@ -90,9 +90,15 @@ export default class TripEventsPresenter {
   }
 
   #handlePointChange = (updatedPoint) => {
-    this.#boardPoints = updateItem(this.#boardPoints, updatedPoint);
+    if (!(this.#boardPoints.find((item) => item.id === updatedPoint.id) === undefined)) {
+      this.#boardPoints = updateItem(this.#boardPoints, updatedPoint);
+      this.#pointPresenter.get(updatedPoint.id).init(updatedPoint);
+    } else {
+      this.#boardPoints.push(updatedPoint);
+      this.#renderPoint(updatedPoint);
+      this.#pointPresenter.get(updatedPoint.id).init(updatedPoint);
+    }
     this.#currentSortType = updateItem(this.#boardPoints, updatedPoint);
-    this.#pointPresenter.get(updatedPoint.id).init(updatedPoint);
   };
 
   #sortTypes = (sortType) => {

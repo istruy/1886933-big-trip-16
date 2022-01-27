@@ -2,12 +2,7 @@ import PointRouteView from '../view/point-route-view';
 import FormEditingView from '../view/form-editing-view';
 import FormCreationView from '../view/form-creation-view';
 import { removeElement, render, RenderPosition, replace, add } from '../utils/render.js';
-
-const Mode = {
-  DEFAULT: 'DEFAULT',
-  EDITING: 'EDITING',
-  CREATING: 'CREATING'
-};
+import { Mode } from '../const';
 
 export default class PointPresenter {
   #point = null;
@@ -89,11 +84,14 @@ export default class PointPresenter {
   #replaceNewPointToForm = () => {
     add(this.#pointCreateComponent, this.#pointComponent);
     document.addEventListener('keydown', this.#escDownHandler);
-    this.#mode = Mode.CREATING;
   }
 
   #handleCreateClick = () => {
-    this.#replaceNewPointToForm();
+    if (!(this.#mode === Mode.CREATING)) {
+      this.#changeMode();
+      this.#mode = Mode.CREATING;
+      this.#replaceNewPointToForm();
+    }
   }
 
   #replacePointToForm = () => {
@@ -104,8 +102,11 @@ export default class PointPresenter {
   }
 
   #replaceFormToPoint = () => {
-    replace(this.#pointComponent, this.#pointEditComponent);
-    replace(this.#pointComponent, this.#pointCreateComponent);
+    if (this.#mode === Mode.EDITING) {
+      replace(this.#pointComponent, this.#pointEditComponent);
+    } else if (this.#mode === Mode.CREATING) {
+      replace(this.#pointComponent, this.#pointCreateComponent);
+    }
     document.removeEventListener('keydown', this.#escDownHandler);
     this.#mode = Mode.DEFAULT;
   }

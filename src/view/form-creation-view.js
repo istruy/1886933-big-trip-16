@@ -4,14 +4,13 @@ import { getDestination } from '../mock/mock.js';
 import dayjs from 'dayjs';
 import SmartView from './smart-view.js';
 import { nanoid } from 'nanoid';
-import { deleteItem, getItemById } from '../utils/common.js';
+import { deleteItem, getItemById, getItemByName } from '../utils/common.js';
 
 const BLANK_POINT = {
   basePrice: 100,
   dateFrom: dayjs(),
   dateTo: dayjs(),
   destination: getDestination(),
-  id: nanoid(),
   isFavorite: false,
   offers: [],
   type: PointTypes.Bus
@@ -20,7 +19,9 @@ const BLANK_POINT = {
 const createFormCreationTemplate = (data) => {
 
   const { basePrice, dateFrom, dateTo, destination, checkedOffers, type, pointDestination, newDescription, newPictures, offersWithType, allDestinations } = data;
-  const { description, name, pictures } = destination;
+  const { name } = destination;
+
+  const getPointDestinationByName = () => getItemByName(allDestinations, name);
 
   const getDestinationTemplate = () => {
     let destinations = '';
@@ -31,8 +32,9 @@ const createFormCreationTemplate = (data) => {
   };
 
   const getInfoAboutCity = () => {
-    let newPointDescription = description;
-    let newPointPictures = pictures;
+    const destinationPoint = getPointDestinationByName();
+    let newPointDescription = destinationPoint.description;
+    let newPointPictures = destinationPoint.pictures;
 
     if (newDescription !== undefined && newPictures !== undefined) {
       newPointDescription = newDescription;
@@ -43,11 +45,14 @@ const createFormCreationTemplate = (data) => {
     <div class="event__photos-container">
       <div class="event__photos-tape">`;
 
-    for (const element of newPointPictures) {
-      const { src } = element;
-      info += `<img class="event__photo" src="${src}" alt="Event photo">`;
+    if (!(newPointPictures === undefined)) {
+      for (const element of newPointPictures) {
+        const { src } = element;
+        info += `<img class="event__photo" src="${src}" alt="Event photo">`;
+      }
     }
     return info;
+
   };
 
   const getPointDestination = () => pointDestination === undefined ? name : pointDestination;
@@ -167,7 +172,8 @@ export default class FormCreationView extends SmartView {
     super();
     this.#offers = offers;
     this.#destinations = destinations;
-    this._data = FormCreationView.parsePointToData(point, offers, destinations);
+    const id = nanoid();
+    this._data = FormCreationView.parsePointToData(point, offers, destinations, id);
     this.#setInnerHandlers();
   }
 
@@ -270,12 +276,13 @@ export default class FormCreationView extends SmartView {
     this.updateData(FormCreationView.parsePointToData(point, this.#offers, this.#destinations));
   }
 
-  static parsePointToData = (point, offers, destinations) => ({
+  static parsePointToData = (point, offers, destinations, id) => ({
     ...point,
     pointDestination: point.destination.name,
     checkedOffers: point.offers.slice(0),
     offersWithType: offers,
-    allDestinations: destinations
+    allDestinations: destinations,
+    id: id
   });
 
   static parseDataToPoint = (data) => {

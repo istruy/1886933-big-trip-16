@@ -42,6 +42,12 @@ export const PointTypesNames = {
   [PointTypes.Restaurant]: 'Restaurant'
 };
 
+export const Mode = {
+  DEFAULT: 'DEFAULT',
+  EDITING: 'EDITING',
+  CREATING: 'CREATING'
+};
+
 export const POINTS_COUNT = 15;
 
 export const SORT_TYPES = {

@@ -6,12 +6,10 @@ import { getItemByType } from '../utils/point.js';
 
 const createFormEditingTemplate = (data) => {
 
-  const { basePrice, dateFrom, dateTo, destination, checkedOffers, type, newDestination, offersWithType, allDestinations } = data;
-  const { description, name, pictures } = destination;
+  const { basePrice, dateFrom, dateTo, destination, checkedOffers, type, pointDestination, newDescription, newPictures, offersWithType, allDestinations } = data;
+  const { name } = destination;
 
-  const getDestination = () => {
-    return getItemByName(allDestinations, name);
-  }
+  const getDestination = () => getItemByName(allDestinations, name);
 
   const getDestinationTemplate = () => {
     let destinations = '';
@@ -22,28 +20,30 @@ const createFormEditingTemplate = (data) => {
   };
 
   const getInfoAboutCity = () => {
-    const destinations = getDestination();
-    const pointDescription = destinations.description;
-    const pointPictures = destinations.pictures;
 
-    if (newDestination.description !== undefined && newDestination.pictures !== undefined) {
-      pointDescription = newDestination.description;
-      pointPictures = newDestination.pictures;
+    const destinationPoint = getDestination();
+
+    let newPointDescription = destinationPoint.description;
+    let newPointPictures = destinationPoint.pictures;
+
+    if (newDescription !== undefined && newPictures !== undefined) {
+      newPointDescription = newDescription;
+      newPointPictures = newPictures;
     }
-
     let info = `<h3 class="event__section-title  event__section-title--destination">Destination</h3>
-    <p class="event__destination-description">${pointDescription}</p>
+    <p class="event__destination-description">${newPointDescription}</p>
     <div class="event__photos-container">
       <div class="event__photos-tape">`;
 
-    for (const element of pointPictures) {
+    for (const element of newPointPictures) {
       const { src } = element;
       info += `<img class="event__photo" src="${src}" alt="Event photo">`;
     }
     return info;
+
   };
 
-  const getPointDestination = () => newDestination.name === undefined ? name : newDestination.name;
+  const getPointDestination = () => pointDestination === undefined ? name : pointDestination;
 
   const checkOfferChecked = (id) => {
     const item = getItemById(checkedOffers, id);
@@ -214,8 +214,11 @@ export default class FormEditingView extends SmartView {
 
   #changeDestinationHandler = (evt) => {
     evt.preventDefault();
+    const newDestination = this.#getNewDestination(evt.target.value);
     this.updateData({
-      newDestination: this.#getNewDestination(evt.target.value),
+      pointDestination: newDestination.name,
+      newPictures: newDestination.pictures,
+      newDescription: newDestination.description
     });
   }
 
@@ -281,7 +284,9 @@ export default class FormEditingView extends SmartView {
       point.offers = point.checkedOffers.slice(0);
     }
 
-    delete point.newDestination;
+    delete point.pointDestination;
+    delete point.newDescription;
+    delete point.newPictures;
     delete point.checkedOffers;
     delete point.allDestinations;
 

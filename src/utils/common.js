@@ -57,7 +57,7 @@ export const getItemById = (items, id) => {
 };
 
 export const getItemByName = (items, name) => {
-  const index = items.findIndex((item) => item.name === name);
+  const index = items.findIndex((item) => item.name.toUpperCase() === name.toUpperCase());
   if (index === -1) {
     return -1;
   }

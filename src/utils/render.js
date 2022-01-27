@@ -57,9 +57,10 @@ export const add = (newElement, oldElement) => {
     throw new Error('Parent element doesn\'t exist');
   }
 
-  if (!(parent.firstChild.nextSibling.outerHTML === newChild.outerHTML)) {
+  if (!(parent.firstChild.innerHTML === newChild.innerHTML)) {
     parent.prepend(newChild);
   }
+
 };
 
 export const removeElement = (component) => {

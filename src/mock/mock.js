@@ -74,7 +74,7 @@ export const getDestination = () => {
 
 export const getDestinations = () => {
   const destintions = new Array();
-  const randomNumber = getRandomInteger(5, 15);
+  const randomNumber = getRandomInteger(10, 30);
   for (let i = 0; i < randomNumber; i++) {
     const destination = getDestination();
     destintions.push(destination);
