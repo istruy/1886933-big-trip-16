@@ -11,6 +11,8 @@ import PointPresenter from './point-presenter';
 
 export default class TripEventsPresenter {
   #tripEvents = null;
+  #offers = [];
+  #destinations = [];
 
   #boardComponent = new BoardView();
   #tripEventsComponent = new TripEventsView();
@@ -22,13 +24,14 @@ export default class TripEventsPresenter {
   #currentSortType = SORT_TYPES.DAY;
   #sourceSortPoints = null;
 
-  constructor(boardContainer) {
+  constructor(boardContainer, offers, destinations) {
     this.#tripEvents = boardContainer;
+    this.#offers = offers;
+    this.#destinations = destinations;
   }
 
   init = (tripEvents) => {
     this.#boardPoints = [...tripEvents];
-
     // 1. В отличии от сортировки по любому параметру,
     // исходный порядок можно сохранить только одним способом -
     // сохранив исходный массив:
@@ -41,7 +44,7 @@ export default class TripEventsPresenter {
   }
 
   #renderPoint = (point) => {
-    const pointPresenter = new PointPresenter(this.#tripEventsComponent, this.#handlePointChange, this.#handleModeChange, this.#handlePointDelete);
+    const pointPresenter = new PointPresenter(this.#offers, this.#destinations, this.#tripEventsComponent, this.#handlePointChange, this.#handleModeChange, this.#handlePointDelete);
     pointPresenter.init(point);
     this.#pointPresenter.set(point.id, pointPresenter);
   }
@@ -62,6 +65,9 @@ export default class TripEventsPresenter {
       return;
     }
     this.#sortTypes(sortType);
+    if (this.#currentSortType !== sortType) {
+      return;
+    }
     this.#clearPointList();
     this.#renderPointsList(this.#boardPoints);
     removeElement(this.#sortComponent);
@@ -84,24 +90,35 @@ export default class TripEventsPresenter {
   }
 
   #handlePointChange = (updatedPoint) => {
-    this.#boardPoints = updateItem(this.#boardPoints, updatedPoint);
+    if (!(this.#boardPoints.find((item) => item.id === updatedPoint.id) === undefined)) {
+      this.#boardPoints = updateItem(this.#boardPoints, updatedPoint);
+      this.#pointPresenter.get(updatedPoint.id).init(updatedPoint);
+    } else {
+      this.#boardPoints.push(updatedPoint);
+      this.#renderPoint(updatedPoint);
+      this.#pointPresenter.get(updatedPoint.id).init(updatedPoint);
+    }
     this.#currentSortType = updateItem(this.#boardPoints, updatedPoint);
-    this.#pointPresenter.get(updatedPoint.id).init(updatedPoint);
   };
 
   #sortTypes = (sortType) => {
     switch (sortType) {
       case SORT_TYPES.PRICE:
         this.#boardPoints.sort(sortPrice);
+        this.#currentSortType = sortType;
         break;
       case SORT_TYPES.TIME:
         this.#boardPoints.sort(sortTime);
+        this.#currentSortType = sortType;
         break;
-      default:
+      case undefined:
+        break;
+      case SORT_TYPES.DAY:
         this.#boardPoints = [...this.#sourceSortPoints];
+        this.#currentSortType = sortType;
+        break;
     }
 
-    this.#currentSortType = sortType;
   }
 
   #renderNoPoints = () => {

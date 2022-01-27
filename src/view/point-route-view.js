@@ -8,8 +8,8 @@ const createPointRouteTemplate = (pointRoute) => {
 
   const getOfferElement = () => {
     let offerElement = '';
-    for (const element of offers) {
-      const { title, price } = element;
+    for (const offer of offers) {
+      const { title, price } = offer;
       offerElement += `<li class="event__offer">
                         <span class="event__offer-title">${title}</span>
                         &plus;&euro;&nbsp;

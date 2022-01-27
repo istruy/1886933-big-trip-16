@@ -1,11 +1,40 @@
-import { getRandomBoolean, getRandomElementFromArray, getRandomInteger } from '../utils/common.js';
+import { getRandomElementsFromArray, getRandomBoolean, getRandomElementFromArray, getRandomInteger } from '../utils/common.js';
 import dayjs from 'dayjs';
 import { nanoid } from 'nanoid';
-import { POINTS_DESTINATION, DESCRIPTION, OFFERS, POINTS_COUNT, TYPE_ROUTE } from '../const.js';
+import { DESCRIPTION, OFFERS, POINTS_COUNT, PointTypes, PointDestination } from '../const.js';
 
-const generateTypeRoute = () => getRandomElementFromArray(TYPE_ROUTE);
+/** OFFERS */
 
-const generatePointDestination = () => getRandomElementFromArray(POINTS_DESTINATION);
+const generatePrice = () => getRandomInteger(10, 30);
+
+const generateOfferName = () => getRandomElementFromArray(OFFERS);
+
+const getRandomOffer = () => {
+  const offer = {
+    id: getRandomInteger(1, 1000),
+    title: generateOfferName(),
+    price: generatePrice()
+  };
+  return offer;
+};
+
+const generateOffers = () => {
+  const randomIndex = getRandomInteger(0, 5);
+  const offers = new Array();
+  for (let i = 0; i < randomIndex; i++) {
+    offers.push(getRandomOffer());
+  }
+  return offers;
+};
+
+const possibleOffers = Object.values(PointTypes).map((type) => ({ type, offers: generateOffers() }));
+
+export const getOffers = () => possibleOffers.slice(0);
+
+
+const generateTypeRoute = () => getRandomElementFromArray(Object.values(PointTypes));
+
+/** DESTINATIONS */
 
 const getDescription = () => {
   let randomDescription = '';
@@ -14,6 +43,8 @@ const getDescription = () => {
   }
   return randomDescription;
 };
+
+const generatePointDestination = () => getRandomElementFromArray(Object.values(PointDestination));
 
 const getPicture = () => {
   const pictures = {
@@ -32,7 +63,7 @@ const generateImagesDestination = () => {
   return pictures;
 };
 
-const getDestinations = () => {
+export const getDestination = () => {
   const destination = {
     description: getDescription(),
     name: generatePointDestination(),
@@ -41,28 +72,14 @@ const getDestinations = () => {
   return destination;
 };
 
-/** OFFERS */
-
-const generatePrice = () => getRandomInteger(10, 30);
-
-const generateOfferName = () => getRandomElementFromArray(OFFERS);
-
-const getRandomOffer = () => {
-  const offer = {
-    id: getRandomInteger(1, 1000),
-    title: generateOfferName(),
-    price: generatePrice()
-  };
-  return offer;
-};
-
-const generateOffers = () => {
-  const offers = new Array();
-  const randomIndex = getRandomInteger(0, 5);
-  for (let i = 0; i < randomIndex; i++) {
-    offers.push(getRandomOffer());
+export const getDestinations = () => {
+  const destintions = new Array();
+  const randomNumber = getRandomInteger(10, 30);
+  for (let i = 0; i < randomNumber; i++) {
+    const destination = getDestination();
+    destintions.push(destination);
   }
-  return offers;
+  return destintions;
 };
 
 /** DATE */
@@ -77,15 +94,16 @@ const generateDate = () => {
 };
 
 const getPoint = () => {
+  const type = generateTypeRoute();
   const point = {
     id: nanoid(),
     basePrice: getRandomInteger(100, 200),
     dateFrom: generateDate()[0],
     dateTo: generateDate()[1],
-    destination: getDestinations(),
+    destination: getDestination(),
     isFavorite: getRandomBoolean(),
-    offers: generateOffers(),
-    type: generateTypeRoute()
+    offers: getRandomElementsFromArray(possibleOffers.find((it) => it.type === type).offers),
+    type
   };
   return point;
 };
