@@ -5,6 +5,9 @@ import dayjs from 'dayjs';
 import SmartView from './smart-view.js';
 import { nanoid } from 'nanoid';
 import { deleteItem, getItemById, getItemByName } from '../utils/common.js';
+import flatpickr from 'flatpickr';
+
+import '../../node_modules/flatpickr/dist/flatpickr.min.css';
 
 const BLANK_POINT = {
   basePrice: 100,
@@ -20,6 +23,8 @@ const createFormCreationTemplate = (data) => {
 
   const { basePrice, dateFrom, dateTo, destination, checkedOffers, type, pointDestination, newDescription, newPictures, offersWithType, allDestinations } = data;
   const { name } = destination;
+
+  const isDisabled = (pointDestination === '' || basePrice === '') || (dateFrom > dateTo) ? 'disabled' : '';
 
   const getPointDestinationByName = () => getItemByName(allDestinations, name);
 
@@ -148,7 +153,7 @@ const createFormCreationTemplate = (data) => {
                     <input class="event__input  event__input--price" id="event-price-1" type="text" name="event-price" value="${basePrice}">
                   </div>
 
-                  <button class="event__save-btn  btn  btn--blue" type="submit">Save</button>
+                  <button class="event__save-btn  btn  btn--blue" type="submit" ${isDisabled}>Save</button>
                   <button class="event__reset-btn" type="reset">Cancel</button>
                 </header>
 
@@ -167,6 +172,8 @@ const createFormCreationTemplate = (data) => {
 export default class FormCreationView extends SmartView {
   #offers = [];
   #destinations = [];
+  #datepickerDateFrom = null;
+  #datepickerDateTo = null;
 
   constructor(offers, destinations, point = BLANK_POINT) {
     super();
@@ -174,15 +181,33 @@ export default class FormCreationView extends SmartView {
     this.#destinations = destinations;
     const id = nanoid();
     this._data = FormCreationView.parsePointToData(point, offers, destinations, id);
+
     this.#setInnerHandlers();
+    this.setDatepickerDateFrom();
+    this.setDatepickerDateTo();
   }
 
   get template() {
     return createFormCreationTemplate(this._data);
   }
 
+  removeElement = () => {
+    super.removeElement();
+
+    if (this.#datepickerDateFrom) {
+      this.#datepickerDateFrom.destroy();
+      this.#datepickerDateFrom = null;
+    }
+    if (this.#datepickerDateTo) {
+      this.#datepickerDateTo.destroy();
+      this.#datepickerDateTo = null;
+    }
+  }
+
   restoreHandlers() {
     this.#setInnerHandlers();
+    this.setDatepickerDateTo();
+    this.setDatepickerDateFrom();
     this.setFormSubmitHandler(this._callback.formSubmit);
     this.setDeleteClickHandler(this._callback.deleteClick);
   }
@@ -197,6 +222,44 @@ export default class FormCreationView extends SmartView {
   setFormSubmitHandler = (callback) => {
     this._callback.formSubmit = callback;
     this.element.querySelector('form').addEventListener('submit', this.#formSubmitHandler);
+  }
+
+  setDatepickerDateFrom = () => {
+    this.#datepickerDateFrom = flatpickr(
+      this.element.querySelector('input[name="event-start-time"]'),
+      {
+        dateFormat: 'y/m/d H:i',
+        defaultDate: this._data.dateFrom,
+        onChange: this.#dateFromChangeHandler,
+        enableTime: true,
+        time_24hr: true
+      }
+    );
+  }
+
+  setDatepickerDateTo = () => {
+    this.#datepickerDateTo = flatpickr(
+      this.element.querySelector('input[name="event-end-time"]'),
+      {
+        dateFormat: 'y/m/d H:i',
+        defaultDate: this._data.dateTo,
+        onChange: this.#dateToChangeHandler,
+        enableTime: true,
+        time_24hr: true
+      }
+    );
+  }
+
+  #dateFromChangeHandler = ([userDate]) => {
+    this.updateData({
+      dateFrom: userDate
+    });
+  }
+
+  #dateToChangeHandler = ([userDate]) => {
+    this.updateData({
+      dateTo: userDate
+    });
   }
 
   #formSubmitHandler = (evt) => {
