@@ -26,10 +26,10 @@
     "node": "16"
   },
   "dependencies": {
-    "css-loader": "^6.5.1",
+    "css-loader": "6.5.1",
     "dayjs": "1.10.7",
     "flatpickr": "4.6.9",
     "nanoid": "3.1.30",
-    "style-loader": "^3.3.1"
+    "style-loader": "3.3.1"
   }
 }
