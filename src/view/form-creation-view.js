@@ -230,7 +230,9 @@ export default class FormCreationView extends SmartView {
       {
         dateFormat: 'y/m/d H:i',
         defaultDate: this._data.dateFrom,
-        onChange: this.#dateFromChangeHandler
+        onChange: this.#dateFromChangeHandler,
+        enableTime: true,
+        time_24hr: true
       }
     );
   }
@@ -241,7 +243,9 @@ export default class FormCreationView extends SmartView {
       {
         dateFormat: 'y/m/d H:i',
         defaultDate: this._data.dateTo,
-        onChange: this.#dateToChangeHandler
+        onChange: this.#dateToChangeHandler,
+        enableTime: true,
+        time_24hr: true
       }
     );
   }
