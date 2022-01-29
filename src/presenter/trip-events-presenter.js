@@ -13,6 +13,7 @@ export default class TripEventsPresenter {
   #tripEvents = null;
   #offers = [];
   #destinations = [];
+  #pointModel = null;
 
   #boardComponent = new BoardView();
   #tripEventsComponent = new TripEventsView();
@@ -24,10 +25,15 @@ export default class TripEventsPresenter {
   #currentSortType = SORT_TYPES.DAY;
   #sourceSortPoints = null;
 
-  constructor(boardContainer, offers, destinations) {
+  constructor(boardContainer, offers, destinations, pointModel) {
     this.#tripEvents = boardContainer;
     this.#offers = offers;
     this.#destinations = destinations;
+    this.#pointModel = pointModel;
+  }
+
+  get points() {
+    return this.#pointModel.points;
   }
 
   init = (tripEvents) => {
