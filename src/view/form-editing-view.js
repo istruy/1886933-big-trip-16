@@ -221,7 +221,7 @@ export default class FormEditingView extends SmartView {
         defaultDate: this._data.dateFrom,
         onChange: this.#dateFromChangeHandler,
         enableTime: true,
-        time_24hr: true
+        ['time_24hr']: true
       }
     );
   }
@@ -234,7 +234,7 @@ export default class FormEditingView extends SmartView {
         defaultDate: this._data.dateTo,
         onChange: this.#dateToChangeHandler,
         enableTime: true,
-        time_24hr: true
+        ['time_24hr']: true
       }
     );
   }
