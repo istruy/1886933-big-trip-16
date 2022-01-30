@@ -3,6 +3,9 @@ import FormEditingView from '../view/form-editing-view';
 import FormCreationView from '../view/form-creation-view';
 import { removeElement, render, RenderPosition, replace, add } from '../utils/render.js';
 import { Mode } from '../const';
+import { isDatesEqual } from '../utils/point';
+import { USER_ACTION, UPDATE_TYPE } from '../const.js';
+
 
 export default class PointPresenter {
   #point = null;
@@ -11,7 +14,6 @@ export default class PointPresenter {
   #changeData = null;
   #pointListContainer = null;
   #changeMode = null;
-  #deleteData = null;
 
   #pointComponent = null;
   #pointEditComponent = null;
@@ -19,13 +21,12 @@ export default class PointPresenter {
 
   #mode = Mode.DEFAULT;
 
-  constructor(offers, destinations, pointListContainer, changeData, changeMode, deleteData) {
+  constructor(offers, destinations, pointListContainer, changeData, changeMode) {
     this.#offers = offers;
     this.#destinations = destinations;
     this.#pointListContainer = pointListContainer;
     this.#changeData = changeData;
     this.#changeMode = changeMode;
-    this.#deleteData = deleteData;
   }
 
   init = (point) => {
@@ -44,6 +45,7 @@ export default class PointPresenter {
     this.#pointCreateComponent.setFormSubmitHandler(this.#handleFormSubmit);
     this.#pointComponent.setFavoriteClickHandler(this.#handleFavoriteClick);
     this.#pointEditComponent.setDeleteClickHandler(this.#handleDeleteClick);
+    this.#pointCreateComponent.setDeleteClickHandler(this.#handleDeleteClick);
     document.querySelector('.trip-main__event-add-btn').addEventListener('click', this.#handleCreateClick);
 
     if (prevPointRoute === null || prevPointEditRoute === null || prevPointCreatePoint === null) {
@@ -111,8 +113,26 @@ export default class PointPresenter {
     this.#mode = Mode.DEFAULT;
   }
 
-  #handleFormSubmit = (point) => {
-    this.#changeData(point);
+  #handleFormSubmit = (update) => {
+    // Проверяем, поменялись ли в задаче данные, которые попадают под фильтрацию,
+    // а значит требуют перерисовки списка - если таких нет, это PATCH-обновление
+    const isMinorUpdate =
+      !isDatesEqual(this.#point.dateFrom, update.dateFrom) ||
+      !isDatesEqual(this.#point.dateTo, update.dateTo);
+
+    if (this.#mode === Mode.EDITING) {
+      this.#changeData(
+        USER_ACTION.UPDATE_POINT,
+        isMinorUpdate ? UPDATE_TYPE.MINOR : UPDATE_TYPE.PATCH,
+        update
+      );
+    } else if (this.#mode === Mode.CREATING) {
+      this.#changeData(
+        USER_ACTION.ADD_POINT,
+        UPDATE_TYPE.MAJOR,
+        update
+      );
+    }
     this.#replaceFormToPoint();
   }
 
@@ -121,11 +141,20 @@ export default class PointPresenter {
   }
 
   #handleFavoriteClick = () => {
-    this.#changeData({ ...this.#point, isFavorite: !this.#point.isFavorite });
+    this.#changeData(
+      USER_ACTION.UPDATE_POINT,
+      UPDATE_TYPE.PATCH,
+      { ...this.#point, isFavorite: !this.#point.isFavorite });
   }
 
   #handleDeleteClick = () => {
-    this.#deleteData(this.#point);
+    if (this.#mode === Mode.EDITING) {
+      this.#changeData(
+        USER_ACTION.DELETE_POINT,
+        UPDATE_TYPE.MINOR,
+        { ...this.#point },
+      );
+    }
     this.destroy();
   }
 
