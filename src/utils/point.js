@@ -18,6 +18,20 @@ export const sortPrice = (pointA, pointB) => {
 
 export const sortTime = (pointA, pointB) => dayjs(pointA.dateFrom).diff(pointB.dateTo);
 
+export const sortDay = (pointA, pointB) => {
+  if (dayjs(pointA.dateFrom).format('YYYY-MM-DD') > dayjs(pointB.dateFrom).format('YYYY-MM-DD')) {
+    return 1;
+  } else if (dayjs(pointA.dateFrom).format('YYYY-MM-DD') < dayjs(pointB.dateFrom).format('YYYY-MM-DD')) {
+    return -1;
+  }
+  return 0;
+};
+
+export const isPointPast = (date) => !date && dayjs().isBefore(date);
+
+export const isFuturePoint = (date) => date && (dayjs(date).isAfter(dayjs()) || dayjs(date).format('YY/MM/DD HH') === dayjs().isAfter(date, 'YY/MM/DD HH'));
+
+
 export const getItemByType = (typeItem, allItems) => {
   const itemIndex = allItems.findIndex((item) => item.type === typeItem);
   return allItems[itemIndex];
@@ -28,3 +42,6 @@ export const getItemByIdAndType = (allItems, type, id) => {
   const item = getItemById(el.offers, Number(id));
   return item;
 };
+
+export const isDatesEqual = (dateA, dateB) => (dateA === null && dateB === null) || dayjs(dateA).isSame(dateB);
+

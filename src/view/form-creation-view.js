@@ -6,13 +6,14 @@ import SmartView from './smart-view.js';
 import { nanoid } from 'nanoid';
 import { deleteItem, getItemById, getItemByName } from '../utils/common.js';
 import flatpickr from 'flatpickr';
+import he from 'he';
 
 import '../../node_modules/flatpickr/dist/flatpickr.min.css';
 
 const BLANK_POINT = {
   basePrice: 100,
-  dateFrom: dayjs(),
-  dateTo: dayjs(),
+  dateFrom: dayjs().toISOString(),
+  dateTo: dayjs().toISOString(),
   destination: getDestination(),
   isFavorite: false,
   offers: [],
@@ -150,7 +151,7 @@ const createFormCreationTemplate = (data) => {
                       <span class="visually-hidden">Price</span>
                       &euro;
                     </label>
-                    <input class="event__input  event__input--price" id="event-price-1" type="text" name="event-price" value="${basePrice}">
+                    <input class="event__input  event__input--price" id="event-price-1" type="text" name="event-price" value="${he.encode(basePrice.toString())}">
                   </div>
 
                   <button class="event__save-btn  btn  btn--blue" type="submit" ${isDisabled}>Save</button>
@@ -232,7 +233,7 @@ export default class FormCreationView extends SmartView {
         defaultDate: this._data.dateFrom,
         onChange: this.#dateFromChangeHandler,
         enableTime: true,
-        time_24hr: true
+        ['time_24hr']: true
       }
     );
   }
@@ -245,7 +246,7 @@ export default class FormCreationView extends SmartView {
         defaultDate: this._data.dateTo,
         onChange: this.#dateToChangeHandler,
         enableTime: true,
-        time_24hr: true
+        ['time_24hr']: true
       }
     );
   }

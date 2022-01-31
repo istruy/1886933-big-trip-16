@@ -1,9 +1,10 @@
 import { PointTypes, PointTypesNames, PointDestination } from '../const.js';
-import { getItemById, deleteItem, getItemByName } from '../utils/common.js';
-import { getYearMonthDaySlashFormat } from '../utils/point.js';
+import { getItemById, getItemByName } from '../utils/common.js';
+import { getYearMonthDaySlashFormat, getItemByType } from '../utils/point.js';
 import SmartView from './smart-view.js';
-import { getItemByType } from '../utils/point.js';
+import { deleteItem } from '../utils/common.js';
 import flatpickr from 'flatpickr';
+import he from 'he';
 
 import '../../node_modules/flatpickr/dist/flatpickr.min.css';
 
@@ -137,20 +138,20 @@ const createFormEditingTemplate = (data) => {
           <span class="visually-hidden">Price</span>
           &euro;
         </label>
-        <input class="event__input  event__input--price" id="event-price-1" type="text" name="event-price" value="${basePrice}">
-      </div>
+        <input class="event__input  event__input--price" id="event-price-1" type="text" name="event-price" value="${he.encode(basePrice.toString())}">
+      </div >
 
       <button class="event__save-btn  btn  btn--blue" type="submit" ${isDisabled}>Save</button>
       <button class="event__reset-btn" type="reset">Delete</button>
       <button class="event__rollup-btn" type="button">
         <span class="visually-hidden">Open event</span>
       </button>
-    </header>
-    <section class="event__details">
-      ${getOffers()}
-      <section class="event__section  event__section--destination">
-        ${getInfoAboutCity()}
-      </div>
+    </header >
+  <section class="event__details">
+    ${getOffers()}
+    <section class="event__section  event__section--destination">
+      ${getInfoAboutCity()}
+    </div>
   </div>
                   </section >
                 </section >
@@ -220,7 +221,7 @@ export default class FormEditingView extends SmartView {
         defaultDate: this._data.dateFrom,
         onChange: this.#dateFromChangeHandler,
         enableTime: true,
-        time_24hr: true
+        ['time_24hr']: true
       }
     );
   }
@@ -233,7 +234,7 @@ export default class FormEditingView extends SmartView {
         defaultDate: this._data.dateTo,
         onChange: this.#dateToChangeHandler,
         enableTime: true,
-        time_24hr: true
+        ['time_24hr']: true
       }
     );
   }

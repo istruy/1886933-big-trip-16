@@ -88,8 +88,8 @@ const generateDate = () => {
   const dateNow = dayjs();
   const dateOffset = dateNow.add(getRandomInteger(2, 20), 'day');
   const dateToFrom = new Array();
-  dateToFrom.push(dateOffset);
-  dateToFrom.push(dateOffset.add(30, 'minute'));
+  dateToFrom.push(dateOffset.toISOString());
+  dateToFrom.push(dateOffset.add(30, 'minute').toISOString());
   return dateToFrom;
 };
 
