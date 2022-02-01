@@ -32,9 +32,6 @@ export default class TripEventsPresenter {
     this.#destinations = destinations;
     this.#pointModel = pointModel;
     this.#filterModel = filterModel;
-
-    this.#pointModel.addObserver(this.#handleModelEvent);
-    this.#filterModel.addObserver(this.#handleModelEvent);
   }
 
   get points() {
@@ -53,6 +50,9 @@ export default class TripEventsPresenter {
         return filteredPoints.sort(sortDay);
     }
 
+    this.#pointModel.addObserver(this.#handleModelEvent);
+    this.#filterModel.addObserver(this.#handleModelEvent);
+
     return filteredPoints;
   }
 
@@ -61,6 +61,15 @@ export default class TripEventsPresenter {
     render(this.#boardComponent, RenderPosition.BEFOREEND, this.#tripEventsComponent);
 
     this.#renderBoard();
+  }
+
+  destroy = () => {
+    this.#clearBoard();
+
+    removeElement(this.#boardComponent);
+
+    this.#pointModel.removeObserver(this.#handleModelEvent);
+    this.#filterModel.removeObserver(this.#handleModelEvent);
   }
 
   #renderPoint = (point) => {

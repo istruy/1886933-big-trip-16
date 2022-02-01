@@ -14,13 +14,14 @@ export default class FilterPresenter {
     this.#filterContainer = filterContainer;
     this.#filterModel = filterModel;
     this.#pointsModel = pointsModel;
-
-    this.#pointsModel.addObserver(this.#handleModelEvent);
-    this.#filterModel.addObserver(this.#handleModelEvent);
   }
 
   get filters() {
     const points = this.#pointsModel.points;
+
+    this.#pointsModel.addObserver(this.#handleModelEvent);
+    this.#filterModel.addObserver(this.#handleModelEvent);
+
     return [
       {
         type: FILTER_TYPE.EVERYTHING,
@@ -48,13 +49,23 @@ export default class FilterPresenter {
     this.#filterComponent.setFilterTypeChangeHandler(this.#handleFilterTypeChange);
 
     if (prevFilterComponent === null) {
-      const siteFilterElement = document.querySelector('.trip-controls__filters');
+      const siteFilterElement = document.querySelector('.trip-main__trip-controls');
       render(siteFilterElement, RenderPosition.BEFOREEND, this.#filterComponent);
       return;
     }
 
     replace(this.#filterComponent, prevFilterComponent);
     removeElement(prevFilterComponent);
+  }
+
+  destroy = () => {
+    removeElement(this.#filterComponent);
+    this.#filterComponent = null;
+
+    this.#pointsModel.removeObserver(this.#handleModelEvent);
+    this.#filterModel.removeObserver(this.#handleModelEvent);
+
+    this.#filterModel.setFilter(UPDATE_TYPE.MAJOR, FILTER_TYPE.EVERYTHING);
   }
 
   #handleModelEvent = () => {

@@ -75,3 +75,9 @@ export const FILTER_TYPE = {
   FUTURE: 'future',
   PAST: 'past'
 };
+
+export const MenuItem = {
+  ADD_NEW_POINT: 'New event',
+  POINTS: 'Table',
+  STATS: 'Stats',
+};
