@@ -266,6 +266,16 @@ export default class FormEditingView extends SmartView {
     this._callback.deleteClick();
   }
 
+  setHideClickHandler = (callback) => {
+    this._callback.hideClick = callback;
+    this.element.querySelector('.event__rollup-btn').addEventListener('click', this.#hideClickHandler);
+  }
+
+  #hideClickHandler = (evt) => {
+    evt.preventDefault();
+    this._callback.hideClick();
+  }
+
   #changeTypeRouteHandler = (evt) => {
     evt.preventDefault();
     const type = evt.target.parentElement.querySelector('input').value;

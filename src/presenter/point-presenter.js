@@ -46,6 +46,7 @@ export default class PointPresenter {
     this.#pointComponent.setFavoriteClickHandler(this.#handleFavoriteClick);
     this.#pointEditComponent.setDeleteClickHandler(this.#handleDeleteClick);
     this.#pointCreateComponent.setDeleteClickHandler(this.#handleDeleteClick);
+    this.#pointEditComponent.setHideClickHandler(this.#handleHideClick);
     document.querySelector('.trip-main__event-add-btn').addEventListener('click', this.#handleCreateClick);
 
     if (prevPointRoute === null || prevPointEditRoute === null || prevPointCreatePoint === null) {
@@ -111,6 +112,11 @@ export default class PointPresenter {
     }
     document.removeEventListener('keydown', this.#escDownHandler);
     this.#mode = Mode.DEFAULT;
+  }
+
+  #handleHideClick = () => {
+    this.#replaceFormToPoint();
+    document.querySelector('.event__rollup-btn').removeEventListener('click', this.#escDownHandler);
   }
 
   #handleFormSubmit = (update) => {
