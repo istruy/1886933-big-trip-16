@@ -7,13 +7,13 @@ const createSiteMenuTemplate = () => (
       <div class="trip-controls__navigation">
         <h2 class="visually-hidden">Switch trip view</h2>
         <nav class="trip-controls__trip-tabs  trip-tabs">
-                <a class="trip-tabs__btn  trip-tabs__btn--active" href="#">${MenuItem.POINTS}</a>
-                <a class="trip-tabs__btn" href="#">${MenuItem.STATS}</a>
+                <a class="trip-tabs__btn  trip-tabs__btn--active" data-menu-item=${MenuItem.POINTS} href="#">Table</a>
+                <a class="trip-tabs__btn" data-menu-item=${MenuItem.STATS} href="#">Stats</a>
         </nav>
       </div>
     </div>
 
-    <button class="trip-main__event-add-btn  btn  btn--big  btn--yellow" type="button">${MenuItem.ADD_NEW_POINT}</button>
+    <button class="trip-main__event-add-btn  btn  btn--big  btn--yellow" type="button">New event</button>
   </div>`
 );
 
@@ -28,9 +28,28 @@ export default class MenuView extends AbstractView {
     this.element.addEventListener('click', this.#menuClickHandler);
   }
 
+  setActiveTab = (menuItem) => {
+    const item = this.element.querySelector(`a[data-menu-item=${menuItem}]`);
+
+    if (item !== null) {
+      item.classList.add('trip-tabs__btn--active');
+    }
+
+    switch (menuItem) {
+      case MenuItem.POINTS:
+        const itemOther = this.element.querySelector(`a[data-menu-item=${MenuItem.STATS}]`);
+        itemOther.classList.remove('trip-tabs__btn--active');
+        break;
+      case MenuItem.STATS:
+        const itemOtherItem = this.element.querySelector(`a[data-menu-item=${MenuItem.POINTS}]`);
+        itemOtherItem.classList.remove('trip-tabs__btn--active');
+        break;
+    }
+  }
+
   #menuClickHandler = (evt) => {
     evt.preventDefault();
-    this._callback.menuClick(evt.target.innerText);
+    this._callback.menuClick(evt.target.dataset.menuItem);
   }
 
 }

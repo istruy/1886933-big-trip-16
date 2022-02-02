@@ -35,7 +35,7 @@ const renderMoneyChart = (moneyCtx, points) => {
           color: '#000000',
           anchor: 'end',
           align: 'start',
-          formatter: (val) => '€ ' + val,
+          formatter: (val) => `€${val}`,
         },
       },
       title: {
@@ -108,7 +108,7 @@ const renderTypeChart = (typeCtx, points) => {
           color: '#000000',
           anchor: 'end',
           align: 'start',
-          formatter: (val) => val + 'x'
+          formatter: (val) => `${val}x`
         }
       },
       title: {

@@ -54,10 +54,8 @@ export const sortDay = (pointA, pointB) => {
   return 0;
 };
 
-export const isPointPast = (date) => !date && dayjs().isBefore(date);
-
-export const isFuturePoint = (date) => date && (dayjs(date).isAfter(dayjs()) || dayjs(date).format('YY/MM/DD HH') === dayjs().isAfter(date, 'YY/MM/DD HH'));
-
+export const isPointPast = (date) => dayjs(date).isBefore(dayjs());
+export const isFuturePoint = (date) => date && (dayjs(date).isAfter(dayjs()) || dayjs(date).format('YY/MM/DD HH') === dayjs().format('YY/MM/DD HH'));
 
 export const getItemByType = (typeItem, allItems) => {
   const itemIndex = allItems.findIndex((item) => item.type === typeItem);

@@ -77,7 +77,6 @@ export const FILTER_TYPE = {
 };
 
 export const MenuItem = {
-  ADD_NEW_POINT: 'New event',
   POINTS: 'Table',
   STATS: 'Stats',
 };

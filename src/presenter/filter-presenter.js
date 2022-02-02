@@ -19,9 +19,6 @@ export default class FilterPresenter {
   get filters() {
     const points = this.#pointsModel.points;
 
-    this.#pointsModel.addObserver(this.#handleModelEvent);
-    this.#filterModel.addObserver(this.#handleModelEvent);
-
     return [
       {
         type: FILTER_TYPE.EVERYTHING,
@@ -47,6 +44,9 @@ export default class FilterPresenter {
 
     this.#filterComponent = new FilterView(filters, this.#filterModel.filter);
     this.#filterComponent.setFilterTypeChangeHandler(this.#handleFilterTypeChange);
+
+    this.#pointsModel.addObserver(this.#handleModelEvent);
+    this.#filterModel.addObserver(this.#handleModelEvent);
 
     if (prevFilterComponent === null) {
       const siteFilterElement = document.querySelector('.trip-main__trip-controls');

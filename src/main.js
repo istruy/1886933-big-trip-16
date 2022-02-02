@@ -35,6 +35,7 @@ const handleSiteMenuClick = (menuItem) => {
       filterPresenter.init();
       tripEventsPresenter.init();
       removeElement(statisticsComponent);
+      siteMenuComponent.setActiveTab(menuItem);
       break;
 
     case MenuItem.STATS:
@@ -42,6 +43,7 @@ const handleSiteMenuClick = (menuItem) => {
       tripEventsPresenter.destroy();
       statisticsComponent = new StatsView(pointModel.points);
       render(siteMainElement, RenderPosition.BEFOREEND, statisticsComponent);
+      siteMenuComponent.setActiveTab(menuItem);
       break;
   }
 };

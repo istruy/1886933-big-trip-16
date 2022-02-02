@@ -116,14 +116,13 @@ export default class PointPresenter {
   #handleFormSubmit = (update) => {
     // Проверяем, поменялись ли в задаче данные, которые попадают под фильтрацию,
     // а значит требуют перерисовки списка - если таких нет, это PATCH-обновление
-    const isMinorUpdate =
-      !isDatesEqual(this.#point.dateFrom, update.dateFrom) ||
-      !isDatesEqual(this.#point.dateTo, update.dateTo);
+    const isMinorUpdate = isDatesEqual(this.#point.dateFrom, update.dateFrom)
+      || isDatesEqual(this.#point.dateTo, update.dateTo);
 
     if (this.#mode === Mode.EDITING) {
       this.#changeData(
         USER_ACTION.UPDATE_POINT,
-        isMinorUpdate ? UPDATE_TYPE.MINOR : UPDATE_TYPE.PATCH,
+        isMinorUpdate ? UPDATE_TYPE.PATCH : UPDATE_TYPE.MAJOR,
         update
       );
     } else if (this.#mode === Mode.CREATING) {
