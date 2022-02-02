@@ -36,14 +36,16 @@ export default class MenuView extends AbstractView {
     }
 
     switch (menuItem) {
-      case MenuItem.POINTS:
+      case MenuItem.POINTS: {
         const itemOther = this.element.querySelector(`a[data-menu-item=${MenuItem.STATS}]`);
         itemOther.classList.remove('trip-tabs__btn--active');
         break;
-      case MenuItem.STATS:
+      }
+      case MenuItem.STATS: {
         const itemOtherItem = this.element.querySelector(`a[data-menu-item=${MenuItem.POINTS}]`);
         itemOtherItem.classList.remove('trip-tabs__btn--active');
         break;
+      }
     }
   }
 
