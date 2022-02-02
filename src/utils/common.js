@@ -1,3 +1,5 @@
+import dayjs from 'dayjs';
+
 // Источник - https://github.com/you-dont-need/You-Dont-Need-Lodash-Underscore#_random
 export const getRandomInteger = (a = 0, b = 1) => {
   const lower = Math.ceil(Math.min(a, b));
@@ -19,20 +21,6 @@ export const getRandomElementsFromArray = (elements) => {
 };
 
 export const getRandomBoolean = () => Math.random() < 0.5;
-
-// export const updateItem = (items, update) => {
-//   const index = items.findIndex((item) => item.id === update.id);
-
-//   if (index === -1) {
-//     return items;
-//   }
-
-//   return [
-//     ...items.slice(0, index),
-//     update,
-//     ...items.slice(index + 1)
-//   ];
-// };
 
 export const deleteItem = (items, deletedItem) => {
   const index = items.findIndex((item) => item.id === deletedItem.id);
@@ -65,3 +53,33 @@ export const getItemByName = (items, name) => {
   return items[index];
 };
 
+// Используем особенности Set, чтобы удалить дубли в массиве
+export const makeItemsUniq = (items) => [...new Set(items)];
+
+export const sumPointByPrice = (points, type) => {
+  let sum = null;
+  points.filter((point) => {
+    if (point.type === type) {
+      sum += point.basePrice;
+    }
+  });
+  return sum;
+};
+
+export const getInfoAboutType = (points) => {
+  const typePoints = new Map();
+  const resultPoints = new Array();
+
+  for (const el of points) {
+    const typePoint = points.filter((point) => point.type === el.type);
+    const pointPrice = typePoint.slice().reduce((sum, element) => sum + element.basePrice, 0);
+    const pointCount = typePoint.length;
+    const pointTime = typePoint.slice().reduce((sum, point) => sum + dayjs(point.dateTo).diff(point.dateFrom), 0);
+
+    if (!typePoints.has(el.type)) {
+      typePoints.set(el.type);
+      resultPoints.push([el.type, pointPrice, pointCount, pointTime]);
+    }
+  }
+  return resultPoints;
+};

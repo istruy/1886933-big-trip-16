@@ -26,15 +26,11 @@ export default class TripEventsPresenter {
   #currentSortType = SORT_TYPES.DAY;
 
   constructor(boardContainer, offers, destinations, pointModel, filterModel) {
-
     this.#tripEvents = boardContainer;
     this.#offers = offers;
     this.#destinations = destinations;
     this.#pointModel = pointModel;
     this.#filterModel = filterModel;
-
-    this.#pointModel.addObserver(this.#handleModelEvent);
-    this.#filterModel.addObserver(this.#handleModelEvent);
   }
 
   get points() {
@@ -60,7 +56,19 @@ export default class TripEventsPresenter {
     render(this.#tripEvents, RenderPosition.BEFOREEND, this.#boardComponent);
     render(this.#boardComponent, RenderPosition.BEFOREEND, this.#tripEventsComponent);
 
+    this.#pointModel.addObserver(this.#handleModelEvent);
+    this.#filterModel.addObserver(this.#handleModelEvent);
+
     this.#renderBoard();
+  }
+
+  destroy = () => {
+    this.#clearBoard();
+
+    removeElement(this.#boardComponent);
+
+    this.#pointModel.removeObserver(this.#handleModelEvent);
+    this.#filterModel.removeObserver(this.#handleModelEvent);
   }
 
   #renderPoint = (point) => {

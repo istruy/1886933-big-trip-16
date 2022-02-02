@@ -75,3 +75,8 @@ export const FILTER_TYPE = {
   FUTURE: 'future',
   PAST: 'past'
 };
+
+export const MenuItem = {
+  POINTS: 'Table',
+  STATS: 'Stats',
+};
