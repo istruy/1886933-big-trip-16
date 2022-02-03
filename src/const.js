@@ -74,7 +74,7 @@ export const UPDATE_TYPE = {
 export const FILTER_TYPE = {
   EVERYTHING: 'everything',
   FUTURE: 'future',
-  PAST: 'past'
+  PAST: 'past',
 };
 
 export const MenuItem = {
