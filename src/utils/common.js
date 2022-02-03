@@ -31,7 +31,7 @@ export const deleteItem = (items, deletedItem) => {
 
   return [
     ...items.slice(0, index),
-    ...items.slice(index + 1)
+    ...items.slice(index + 1),
   ];
 };
 
