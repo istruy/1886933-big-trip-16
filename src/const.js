@@ -4,10 +4,11 @@ export const DESCRIPTION = [
   'Fusce tristique felis at fermentum pharetra.',
   'Aliquam id orci ut lectus varius viverra. ',
   'Nullam nunc ex, convallis sed finibus eget, sollicitudin eget ante.',
-  'Phasellus eros mauris, condimentum sed nibh vitae, sodales efficitur ipsum.'
+  'Phasellus eros mauris, condimentum sed nibh vitae, sodales efficitur ipsum.',
 ];
+
 export const OFFERS = [
-  'Add luggage', 'Switch to comfort class', 'Add meal', 'Add alcohol', 'Choose neighbor', 'Change neighbor', 'Add book', 'Add music', 'Add pled', 'Change pled', 'Change alcohol'
+  'Add luggage', 'Switch to comfort class', 'Add meal', 'Add alcohol', 'Choose neighbor', 'Change neighbor', 'Add book', 'Add music', 'Add pled', 'Change pled', 'Change alcohol',
 ];
 
 export const PointDestination = {
@@ -15,7 +16,7 @@ export const PointDestination = {
   Tokyo: 'Tokyo',
   LosAngeles: 'Los-Angeles',
   Capetown: 'Capetown',
-  NewYork: 'New-York'
+  NewYork: 'New-York',
 };
 
 export const PointTypes = {
@@ -27,7 +28,7 @@ export const PointTypes = {
   Sightseeing: 'sightseeing',
   Ship: 'ship',
   Drive: 'drive',
-  Restaurant: 'restaurant'
+  Restaurant: 'restaurant',
 };
 
 export const PointTypesNames = {
@@ -39,13 +40,13 @@ export const PointTypesNames = {
   [PointTypes.Sightseeing]: 'Sightseeing',
   [PointTypes.Ship]: 'Ship',
   [PointTypes.Drive]: 'Drive',
-  [PointTypes.Restaurant]: 'Restaurant'
+  [PointTypes.Restaurant]: 'Restaurant',
 };
 
 export const Mode = {
   DEFAULT: 'DEFAULT',
   EDITING: 'EDITING',
-  CREATING: 'CREATING'
+  CREATING: 'CREATING',
 };
 
 export const POINTS_COUNT = 15;
@@ -55,7 +56,7 @@ export const SORT_TYPES = {
   PRICE: 'Price',
   TIME: 'Time',
   OFFERS: 'Offers',
-  EVENT: 'Event'
+  EVENT: 'Event',
 };
 
 export const USER_ACTION = {

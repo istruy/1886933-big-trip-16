@@ -13,7 +13,7 @@ const getRandomOffer = () => {
   const offer = {
     id: getRandomInteger(1, 1000),
     title: generateOfferName(),
-    price: generatePrice()
+    price: generatePrice(),
   };
   return offer;
 };
@@ -49,7 +49,7 @@ const generatePointDestination = () => getRandomElementFromArray(Object.values(P
 const getPicture = () => {
   const pictures = {
     src: `http://picsum.photos/248/152?r=${getRandomInteger(1, 200)}`,
-    description: getDescription()
+    description: getDescription(),
   };
   return pictures;
 };
@@ -67,7 +67,7 @@ export const getDestination = () => {
   const destination = {
     description: getDescription(),
     name: generatePointDestination(),
-    pictures: generateImagesDestination()
+    pictures: generateImagesDestination(),
   };
   return destination;
 };
@@ -103,7 +103,7 @@ const getPoint = () => {
     destination: getDestination(),
     isFavorite: getRandomBoolean(),
     offers: getRandomElementsFromArray(possibleOffers.find((it) => it.type === type).offers),
-    type
+    type,
   };
   return point;
 };
