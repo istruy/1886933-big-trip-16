@@ -19,9 +19,10 @@ const siteMainElement = document.querySelector('.page-main .page-body__container
 const header = document.querySelector('.page-header__container');
 
 const siteMenuComponent = new MenuView();
+render(header, RenderPosition.BEFOREEND, siteMenuComponent);
 
 pointModel.init().finally(() => {
-  const tripEventsPresenter = new TripEventsPresenter(siteMainElement, pointModel.offers, pointModel.destinations, pointModel, filterModel);
+  const tripEventsPresenter = new TripEventsPresenter(siteMainElement, pointModel, filterModel);
   const filterPresenter = new FilterPresenter(siteMainElement, pointModel, filterModel);
 
   let statisticsComponent = null;
@@ -46,7 +47,6 @@ pointModel.init().finally(() => {
 
   tripEventsPresenter.init();
 
-  render(header, RenderPosition.BEFOREEND, siteMenuComponent);
   siteMenuComponent.setMenuClickHandler(handleSiteMenuClick);
   filterPresenter.init();
   const detailsTripElement = document.querySelector('.trip-main');

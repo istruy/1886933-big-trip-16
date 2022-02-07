@@ -14,8 +14,7 @@ export const State = {
 
 export default class PointPresenter {
   #point = null;
-  #offers = [];
-  #destinations = [];
+  #pointModel = null;
   #changeData = null;
   #pointListContainer = null;
   #changeMode = null;
@@ -26,9 +25,8 @@ export default class PointPresenter {
 
   #mode = Mode.DEFAULT;
 
-  constructor(offers, destinations, pointListContainer, changeData, changeMode) {
-    this.#offers = offers;
-    this.#destinations = destinations;
+  constructor(pointModel, pointListContainer, changeData, changeMode) {
+    this.#pointModel = pointModel;
     this.#pointListContainer = pointListContainer;
     this.#changeData = changeData;
     this.#changeMode = changeMode;
@@ -42,8 +40,8 @@ export default class PointPresenter {
     const prevPointCreatePoint = this.#pointCreateComponent;
 
     this.#pointComponent = new PointRouteView(point);
-    this.#pointEditComponent = new FormEditingView(this.#offers, this.#destinations, point);
-    this.#pointCreateComponent = new FormCreationView(this.#offers, this.#destinations);
+    this.#pointEditComponent = new FormEditingView(this.#pointModel.offers, this.#pointModel.destinations, point);
+    this.#pointCreateComponent = new FormCreationView(this.#pointModel.offers, this.#pointModel.destinations);
 
     this.#pointComponent.setEditClickHandler(this.#handleEditClick);
     this.#pointEditComponent.setFormSubmitHandler(this.#handleFormSubmit);
@@ -70,7 +68,6 @@ export default class PointPresenter {
 
     if (this.#mode === Mode.CREATING) {
       replace(this.#pointComponent, prevPointRoute);
-      this.#mode = Mode.DEFAULT;
     }
 
     removeElement(prevPointRoute);
@@ -206,8 +203,8 @@ export default class PointPresenter {
         UPDATE_TYPE.MAJOR,
         update
       );
+      this.#replaceFormToPoint();
     }
-    // this.#replaceFormToPoint();
   }
 
   #handleEditClick = () => {

@@ -6,6 +6,7 @@ export default class PointModel extends AbstractObservable {
   #points = [];
   #offers = [];
   #destinations = [];
+  #isLoading = true;
 
   constructor(apiService) {
     super();
@@ -24,6 +25,10 @@ export default class PointModel extends AbstractObservable {
     return this.#destinations;
   }
 
+  get isLoading() {
+    return this.#isLoading;
+  }
+
   init = async () => {
     try {
       const points = await this.#apiService.points;
@@ -33,6 +38,8 @@ export default class PointModel extends AbstractObservable {
     } catch (err) {
       this.#points = [];
     }
+
+    this.#isLoading = false;
     this._notify(UPDATE_TYPE.INIT);
   }
 

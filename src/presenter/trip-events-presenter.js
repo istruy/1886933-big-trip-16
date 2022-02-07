@@ -13,8 +13,6 @@ import LoadingView from '../view/loading-view';
 
 export default class TripEventsPresenter {
   #tripEvents = null;
-  #offers = [];
-  #destinations = [];
   #pointModel = null;
   #filterModel = null;
 
@@ -26,12 +24,9 @@ export default class TripEventsPresenter {
 
   #pointPresenter = new Map();
   #currentSortType = SORT_TYPES.DAY;
-  #isLoading = true;
 
-  constructor(boardContainer, offers, destinations, pointModel, filterModel) {
+  constructor(boardContainer, pointModel, filterModel) {
     this.#tripEvents = boardContainer;
-    this.#offers = offers;
-    this.#destinations = destinations;
     this.#pointModel = pointModel;
     this.#filterModel = filterModel;
   }
@@ -75,7 +70,7 @@ export default class TripEventsPresenter {
   }
 
   #renderPoint = (point) => {
-    const pointPresenter = new PointPresenter(this.#offers, this.#destinations, this.#tripEventsComponent, this.#handleViewAction, this.#handleModeChange);
+    const pointPresenter = new PointPresenter(this.#pointModel, this.#tripEventsComponent, this.#handleViewAction, this.#handleModeChange);
     pointPresenter.init(point);
     this.#pointPresenter.set(point.id, pointPresenter);
   }
@@ -126,11 +121,6 @@ export default class TripEventsPresenter {
         break;
       case USER_ACTION.ADD_POINT:
         this.#pointModel.addPoint(updateType, update);
-        // try {
-        //   await this.#pointModel.addPoint(updateType, update);
-        // } catch (err) {
-        //   this.#pointPresenter.setAborting();
-        // }
         break;
       case USER_ACTION.DELETE_POINT:
         this.#pointPresenter.get(update.id).setViewState(PointPresenterViewState.DELETING);
@@ -161,7 +151,6 @@ export default class TripEventsPresenter {
         this.#renderBoard();
         break;
       case UPDATE_TYPE.INIT:
-        this.#isLoading = false;
         removeElement(this.#loadingComponent);
         this.#renderBoard();
         break;
@@ -199,9 +188,8 @@ export default class TripEventsPresenter {
   }
 
   #renderBoard = () => {
-    if (this.#isLoading) {
+    if (this.#pointModel.isloading) {
       this.#renderLoading();
-      this.#isLoading = false;
       return;
     }
 
