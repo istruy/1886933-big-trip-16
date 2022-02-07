@@ -1,9 +1,7 @@
-import { PointTypes, PointTypesNames, PointDestination } from '../const.js';
+import { PointTypes, PointTypesNames } from '../const.js';
 import { getYearMonthDaySlashFormat, getItemByType } from '../utils/point.js';
-import { getDestination } from '../mock/mock.js';
 import dayjs from 'dayjs';
 import SmartView from './smart-view.js';
-import { nanoid } from 'nanoid';
 import { deleteItem, getItemById, getItemByName } from '../utils/common.js';
 import flatpickr from 'flatpickr';
 import he from 'he';
@@ -14,10 +12,10 @@ const BLANK_POINT = {
   basePrice: 100,
   dateFrom: dayjs().toISOString(),
   dateTo: dayjs().toISOString(),
-  destination: getDestination(),
+  destination: [],
   isFavorite: false,
   offers: [],
-  type: PointTypes.Bus
+  type: null
 };
 
 const createFormCreationTemplate = (data) => {
@@ -25,14 +23,14 @@ const createFormCreationTemplate = (data) => {
   const { basePrice, dateFrom, dateTo, destination, checkedOffers, type, pointDestination, newDescription, newPictures, offersWithType, allDestinations } = data;
   const { name } = destination;
 
-  const isDisabled = (pointDestination === '' || basePrice === '') || (dateFrom > dateTo) ? 'disabled' : '';
+  const isDisabled = (pointDestination === '' || basePrice === '') || (basePrice === '0') || (dateFrom > dateTo) ? 'disabled' : '';
 
   const getPointDestinationByName = () => getItemByName(allDestinations, name);
 
   const getDestinationTemplate = () => {
     let destinations = '';
-    for (const el of Object.values(PointDestination)) {
-      destinations += `<option value="${el}"></option>`;
+    for (const el of Object.values(allDestinations)) {
+      destinations += `<option value='${el.name}'></option>`;
     }
     return destinations;
   };
@@ -180,8 +178,12 @@ export default class FormCreationView extends SmartView {
     super();
     this.#offers = offers;
     this.#destinations = destinations;
-    const id = nanoid();
-    this._data = FormCreationView.parsePointToData(point, offers, destinations, id);
+
+    point.destination = destinations[1];
+    point.offers = offers[1].offers;
+    point.type = offers[1].type;
+
+    this._data = FormCreationView.parsePointToData(point, offers, destinations);
 
     this.#setInnerHandlers();
     this.setDatepickerDateFrom();
@@ -215,7 +217,7 @@ export default class FormCreationView extends SmartView {
 
   #setInnerHandlers = () => {
     this.element.querySelector('.event__type-group').addEventListener('click', this.#changeTypeRouteHandler);
-    this.element.querySelector('.event__input--destination').addEventListener('change', this.#changeDestinationHandler);
+    this.element.querySelector('.event__input--destination').addEventListener('blur', this.#changeDestinationHandler);
     this.element.querySelector('.event__input--price').addEventListener('change', this.#priceChangeHandler);
     this.element.querySelector('.event__available-offers').addEventListener('click', this.#offersChangeHandler);
   }
@@ -290,16 +292,22 @@ export default class FormCreationView extends SmartView {
   #changeDestinationHandler = (evt) => {
     evt.preventDefault();
     const newDestination = this.#getNewDestination(evt.target.value);
-    this.updateData({
-      pointDestination: newDestination.name,
-      newPictures: newDestination.pictures,
-      newDescription: newDestination.description
-    });
+    if (newDestination === '') {
+      this.updateData({
+        pointDestination: '',
+      });
+    } else {
+      this.updateData({
+        pointDestination: newDestination.name,
+        newPictures: newDestination.pictures,
+        newDescription: newDestination.description
+      });
+    }
   }
 
   #getNewDestination = (nameNewldDestination) => {
     const checkedDestination = this._data.allDestinations.find((it) => it.name === nameNewldDestination);
-    return checkedDestination;
+    return checkedDestination === undefined ? '' : checkedDestination;
   }
 
   #priceChangeHandler = (evt) => {
@@ -340,13 +348,12 @@ export default class FormCreationView extends SmartView {
     this.updateData(FormCreationView.parsePointToData(point, this.#offers, this.#destinations));
   }
 
-  static parsePointToData = (point, offers, destinations, id) => ({
+  static parsePointToData = (point, offers, destinations) => ({
     ...point,
     pointDestination: point.destination.name,
     checkedOffers: point.offers.slice(0),
     offersWithType: offers,
     allDestinations: destinations,
-    id: id
   });
 
   static parseDataToPoint = (data) => {

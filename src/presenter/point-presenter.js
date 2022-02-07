@@ -6,6 +6,11 @@ import { Mode } from '../const';
 import { isDatesEqual } from '../utils/point';
 import { USER_ACTION, UPDATE_TYPE } from '../const.js';
 
+export const State = {
+  SAVING: 'SAVING',
+  DELETING: 'DELETING',
+  ABORTING: 'ABORTING',
+};
 
 export default class PointPresenter {
   #point = null;
@@ -58,11 +63,13 @@ export default class PointPresenter {
     }
 
     if (this.#mode === Mode.EDITING) {
-      replace(this.#pointEditComponent, prevPointEditRoute);
+      replace(this.#pointComponent, prevPointEditRoute);
+      this.#mode = Mode.DEFAULT;
     }
 
     if (this.#mode === Mode.CREATING) {
-      replace(this.#pointEditComponent, prevPointRoute);
+      replace(this.#pointComponent, prevPointRoute);
+      this.#mode = Mode.DEFAULT;
     }
 
     removeElement(prevPointRoute);
@@ -113,6 +120,68 @@ export default class PointPresenter {
     this.#mode = Mode.DEFAULT;
   }
 
+  setViewState = (state) => {
+    if (this.#mode === Mode.DEFAULT) {
+      return;
+    }
+
+    const resetFormState = () => {
+      if (this.#mode === Mode.EDITING) {
+        this.#pointEditComponent.updateData({
+          isDisabled: false,
+          isSaving: false,
+          isDeleting: false,
+        });
+      } else if (this.#mode === Mode.CREATING) {
+        this.#pointCreateComponent.updateData({
+          isDisabled: false,
+          isSaving: false,
+          isDeleting: false,
+        });
+      }
+    };
+
+    if (this.#mode === Mode.CREATING) {
+      switch (state) {
+        case State.SAVING:
+          this.#pointCreateComponent.updateData({
+            isDisabled: true,
+            isSaving: true,
+          });
+          break;
+        case State.DELETING:
+          this.#pointCreateComponent.updateData({
+            isDisabled: true,
+            isDeleting: true,
+          });
+          break;
+        case State.ABORTING:
+          this.#pointComponent.shake(resetFormState);
+          this.#pointCreateComponent.shake(resetFormState);
+          break;
+      }
+    } else if (this.#mode === Mode.EDITING) {
+      switch (state) {
+        case State.SAVING:
+          this.#pointEditComponent.updateData({
+            isDisabled: true,
+            isSaving: true,
+          });
+          break;
+        case State.DELETING:
+          this.#pointEditComponent.updateData({
+            isDisabled: true,
+            isDeleting: true,
+          });
+          break;
+        case State.ABORTING:
+          this.#pointComponent.shake(resetFormState);
+          this.#pointEditComponent.shake(resetFormState);
+          break;
+      }
+    }
+  }
+
   #handleFormSubmit = (update) => {
     // Проверяем, поменялись ли в задаче данные, которые попадают под фильтрацию,
     // а значит требуют перерисовки списка - если таких нет, это PATCH-обновление
@@ -132,7 +201,7 @@ export default class PointPresenter {
         update
       );
     }
-    this.#replaceFormToPoint();
+    // this.#replaceFormToPoint();
   }
 
   #handleEditClick = () => {
@@ -155,6 +224,33 @@ export default class PointPresenter {
       );
     }
     this.destroy();
+  }
+
+  setSaving = () => {
+    this.#pointCreateComponent.updateData({
+      isDisabled: true,
+      isSaving: true,
+    });
+  }
+
+  setAborting = () => {
+    const resetFormState = () => {
+      if (this.#mode === Mode.EDITING) {
+        this.#pointEditComponent.updateData({
+          isDisabled: false,
+          isSaving: false,
+          isDeleting: false,
+        });
+        this.#pointEditComponent.shake(resetFormState);
+      } else if (this.#mode === Mode.CREATING) {
+        this.#pointCreateComponent.updateData({
+          isDisabled: false,
+          isSaving: false,
+          isDeleting: false,
+        });
+        this.#pointCreateComponent.shake(resetFormState);
+      }
+    };
   }
 
   #escDownHandler = (evt) => {

@@ -1,4 +1,4 @@
-import { PointTypes, PointTypesNames, PointDestination } from '../const.js';
+import { PointTypes, PointTypesNames } from '../const.js';
 import { getItemById, getItemByName } from '../utils/common.js';
 import { getYearMonthDaySlashFormat, getItemByType } from '../utils/point.js';
 import SmartView from './smart-view.js';
@@ -10,17 +10,19 @@ import '../../node_modules/flatpickr/dist/flatpickr.min.css';
 
 const createFormEditingTemplate = (data) => {
 
-  const { basePrice, dateFrom, dateTo, destination, checkedOffers, type, pointDestination, newDescription, newPictures, offersWithType, allDestinations } = data;
+  const { basePrice, dateFrom, dateTo, destination, checkedOffers, type, pointDestination,
+    newDescription, newPictures, offersWithType, allDestinations,
+    isDisabled, isSaving, isDeleting, } = data;
   const { name } = destination;
 
-  const isDisabled = (pointDestination === '' || basePrice === '') || (dateFrom > dateTo) ? 'disabled' : '';
+  const isSubmitDisabled = (pointDestination === '' || basePrice === '') || (basePrice === '0') || (dateFrom > dateTo) ? 'disabled' : '';
 
   const getDestination = () => getItemByName(allDestinations, name);
 
   const getDestinationTemplate = () => {
     let destinations = '';
-    for (const el of Object.values(PointDestination)) {
-      destinations += `<option value="${el}"></option>`;
+    for (const el of Object.values(allDestinations)) {
+      destinations += `<option value='${el.name}'></option>`;
     }
     return destinations;
   };
@@ -119,7 +121,8 @@ const createFormEditingTemplate = (data) => {
                     <label class="event__label  event__type-output" for="event-destination-1">
                     ${type}
                     </label>
-                    <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${getPointDestination()}" list="destination-list-1">
+                    <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination"
+                    value="${getPointDestination()}" list="destination-list-1"  ${isDisabled ? 'disabled' : ''}>
                     <datalist id = "destination-list-1">
                       ${getDestinationTemplate()}
                     </datalist>
@@ -138,11 +141,15 @@ const createFormEditingTemplate = (data) => {
           <span class="visually-hidden">Price</span>
           &euro;
         </label>
-        <input class="event__input  event__input--price" id="event-price-1" type="text" name="event-price" value="${he.encode(basePrice.toString())}">
+        <input class="event__input  event__input--price" id="event-price-1" type="text" name="event-price" value="${he.encode(basePrice.toString())}"  ${isDisabled ? 'disabled' : ''}>
       </div >
 
-      <button class="event__save-btn  btn  btn--blue" type="submit" ${isDisabled}>Save</button>
-      <button class="event__reset-btn" type="reset">Delete</button>
+      <button class="event__save-btn  btn  btn--blue" type="submit" ${isSubmitDisabled}>
+      ${isSaving ? 'Saving...' : 'Save'}
+      </button>
+      <button class="event__reset-btn" type="reset" ${isDisabled ? 'disabled' : ''}>
+      ${isDeleting ? 'Deleting...' : 'Delete'}
+      </button>
       <button class="event__rollup-btn" type="button">
         <span class="visually-hidden">Open event</span>
       </button>
@@ -278,11 +285,17 @@ export default class FormEditingView extends SmartView {
   #changeDestinationHandler = (evt) => {
     evt.preventDefault();
     const newDestination = this.#getNewDestination(evt.target.value);
-    this.updateData({
-      pointDestination: newDestination.name,
-      newPictures: newDestination.pictures,
-      newDescription: newDestination.description
-    });
+    if (newDestination === '') {
+      this.updateData({
+        pointDestination: '',
+      });
+    } else {
+      this.updateData({
+        pointDestination: newDestination.name,
+        newPictures: newDestination.pictures,
+        newDescription: newDestination.description
+      });
+    }
   }
 
   #getNewDestination = (nameNewldDestination) => {
@@ -333,7 +346,10 @@ export default class FormEditingView extends SmartView {
     pointDestination: point.destination.name,
     checkedOffers: point.offers.slice(0),
     offersWithType: offers,
-    allDestinations: destinations
+    allDestinations: destinations,
+    isDisabled: false,
+    isSaving: false,
+    isDeleting: false,
   });
 
   static parseDataToPoint = (data) => {
@@ -352,6 +368,9 @@ export default class FormEditingView extends SmartView {
     delete point.newPictures;
     delete point.checkedOffers;
     delete point.allDestinations;
+    delete point.isDisabled;
+    delete point.isSaving;
+    delete point.isDeleting;
 
     return point;
   }
