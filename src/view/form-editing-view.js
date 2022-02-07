@@ -215,16 +215,6 @@ export default class FormEditingView extends SmartView {
     this.element.querySelector('.event__available-offers').addEventListener('click', this.#offersChangeHandler);
   }
 
-  setHideClickHandler = (callback) => {
-    this._callback.hideClick = callback;
-    this.element.querySelector('.event__rollup-btn').addEventListener('click', this.#hideClickHandler);
-  }
-
-  #hideClickHandler = (evt) => {
-    evt.preventDefault();
-    this._callback.hideClick();
-  }
-
   setFormSubmitHandler = (callback) => {
     this._callback.formSubmit = callback;
     this.element.querySelector('form').addEventListener('submit', this.#formSubmitHandler);
